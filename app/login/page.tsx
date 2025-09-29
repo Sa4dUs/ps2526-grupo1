@@ -2,16 +2,15 @@
 'use client'
  /*THE COMMENTS IN THIS PARTS ARE PERSONAL NOTES FOR ME TO LEARN, NOT REAL COMMENTS */
 import { useState } from 'react'
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from '../../lib/firebaseClient';
 import { AuthUserContext } from '@/lib/AuthUserProvider';
-//why @ in the route...God knows
+//why @ in the route...God (and Marcelo) knows
 
-
+import { useRouter } from 'next/router';
 
 export default function LogInPage(){
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');   
+    const router = useRouter();
 
 const handleLoginClick= async()=>{ //we need async to be able to use wait later on.
     //try-catch is react version of angular's .valid
@@ -32,7 +31,9 @@ const handleLoginClick= async()=>{ //we need async to be able to use wait later 
             }), 
         });
         const data = await response.json();
+        router.push("/"); //@TODO, this is shit 
         console.log("Login worked", data);
+
     }catch (err){
         console.error("Something happened during the login."); 
     }
