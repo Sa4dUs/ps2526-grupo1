@@ -2,8 +2,7 @@
 'use client'
  /*THE COMMENTS IN THIS PARTS ARE PERSONAL NOTES FOR ME TO LEARN, NOT REAL COMMENTS */
 import { useState } from 'react'
-import { AuthUserContext } from '@/lib/AuthUserProvider';
-//why @ in the route...God (and Marcelo) knows
+
 
 import { useRouter } from 'next/router';
 
