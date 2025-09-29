@@ -2,6 +2,8 @@
 'use client'
  /*THE COMMENTS IN THIS PARTS ARE PERSONAL NOTES FOR ME TO LEARN, NOT REAL COMMENTS */
 import { useState } from 'react'
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from '../../lib/firebaseClient';
 
 export default function LogInPage(){
     const [username, setUsername] = useState('');
@@ -27,15 +29,17 @@ const handleLoginClick= async()=>{ //we need async to be able to use wait later 
         });
         const data = await response.json();
         console.log("Login worked", data);
-        //for some reason George decided to name token assap idToken
-        if (data.idToken){
-            localStorage.setItem("token", data.idToken);
-        }
-        if (data.email){
-            localStorage.setItem("email", data.email);
-        }
+        //seems that idToken was not a George's election, but Firebase's.
+        onAuthStateChanged(auth, async (user)=>{
+            if (user) {
+                const idToken = await user.getIdToken();
+                console.log ("Token", idToken);
+                const email = user.email;
+                console.log ("email", user.email);
+            } //makes sense catching an error here ¿?s
+        })
     }catch (err){
-        console.error("Glory for the Mongol Empire"); 
+        console.error("Something happened during the login. Glory for the Mongol Empire!"); 
     }
 }
 
