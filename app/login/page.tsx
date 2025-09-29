@@ -39,7 +39,7 @@ const handleLoginClick= async()=>{ //we need async to be able to use wait later 
             } //makes sense catching an error here ¿?s
         })
     }catch (err){
-        console.error("Something happened during the login. Glory for the Mongol Empire!"); 
+        console.error("Something happened during the login."); 
     }
 }
 
