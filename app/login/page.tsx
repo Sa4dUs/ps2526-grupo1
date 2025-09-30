@@ -39,21 +39,23 @@ const handleLoginClick= async()=>{ //we need async to be able to use wait later 
 
 /* HTML PART*/
 return (
-    <div>
-        <h2>LogIn</h2>
-        
+    <div>        
         {errorMessage && (
             <div style={{ color: "red", marginBottom: "1rem" }}>
                 {errorMessage}
             </div>
         )}
-        <label>Username:</label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-        />
-        <label>Password:</label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
-        />
+        <form>
+            <div className="group">
+                <label>Username:</label>
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
+            </div><div className='group'>
+                <label>Password:</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+            </div>
+        </form>
         <button onClick={handleLoginClick}> Login</button>
+
     </div>
 
 )
