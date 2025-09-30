@@ -30,8 +30,18 @@ const handleLoginClick= async()=>{ //we need async to be able to use wait later 
             }), 
         });
         const data = await response.json();
-        router.push("/"); //@TODO, this is a big shit 
-        console.log("Login worked", data);
+        //here the switch case
+        switch (response.status){
+            case 200: 
+                router.push("/"); //@TODO, this is a big shit 
+                console.log("Login worked", data);
+            case 401:
+                setErrorMessage("Invalid credentials, you fool");
+            case 500:
+                setErrorMessage("Internal error, PANIC");
+        }   
+
+
 
     }catch (err){
         setErrorMessage("Something happened during the login.");
