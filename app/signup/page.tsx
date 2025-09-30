@@ -2,7 +2,6 @@
 
 import { useEffect, useState, FormEvent } from 'react'
 import Image from 'next/image'
-import '../styles.css'
 import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
@@ -25,12 +24,6 @@ export default function SignUpPage() {
     /* HTML PART */
     return (
         <>
-            <header className="p-3 sticky-top">
-                <a href="/">
-                    <Image src="/images/LogoURJC.png" alt="logo" height={50} width={150} />
-                </a>
-            </header>
-
             <div className="bodyContainer">
                 <div className="formDiv">
                     <form id="signup-form" action="/" method="POST" onSubmit={handleSubmit}>
@@ -81,10 +74,6 @@ export default function SignUpPage() {
                     </form>
                 </div>
             </div>
-
-            <footer className="p-3 sticky-bottom">
-                <p>URJC - Ingeniería del Software - 2025 - Grupo 1</p>
-            </footer>
         </>
     )
 }
@@ -176,7 +165,7 @@ function setupValidation() {
         if (userStatus && emailStatus && passwordStatus) {
             form.submit()
         } else {
-            alert('Por favor, corrige los campos marcados en rojo o vacíos.')
+           console.error('Por favor, corrige los campos marcados en rojo o vacíos.')
         }
     })
 }
