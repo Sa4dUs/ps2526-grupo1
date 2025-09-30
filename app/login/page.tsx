@@ -12,11 +12,12 @@ export default function LogInPage(){
 
 const handleLoginClick= async()=>{ //we need async to be able to use wait later on.
     //try-catch is react version of angular's .valid
-    if (!username || !password){
-        setErrorMessage("The reason why you have fingers is the reason it failed :)");
-        return;
-    }
+
     try{
+        if (!username || !password){
+            setErrorMessage("The reason why you have fingers is the reason it failed :)");
+            return;
+        }
         //to use as backend firebase we need JSON format not HTML (append won't work)
         const response = await fetch("/api/auth/login",{//George route
             method: "POST",
