@@ -1,34 +1,11 @@
 import { generateProblems } from "@/lib/problems";
 import { encrypt, decrypt } from "@/lib/crypto";
-
-type Solution = {
-	solution: number;
-	encoded: string;
-};
-
-type RequestPayload = Solution | null;
-
-enum ProblemError {
-	IncorrectSubmission = "IncorrectSubmission",
-	UnexpectedError = "UnexpectedError",
-	InvalidInput = "InvalidInput",
-}
-
-type ResponseError = { error: ProblemError };
-
-type ResponseSuccess = {
-	problem: string;
-	encoded: string;
-};
-
-type ResponsePayload = ResponseError | ResponseSuccess;
-
-type Problem = {
-	index: number;
-	question: string;
-	answers: number[];
-	correctAnswer: number;
-};
+import {
+	Problem,
+	ProblemError,
+	RequestPayload,
+	ResponsePayload,
+} from "@/types/problem";
 
 const createProblem = (index: number, difficulty: number): Problem =>
 	({ index, ...generateProblems(difficulty) } as Problem);
@@ -60,8 +37,14 @@ export async function POST(req: Request) {
 		const next = createProblem(index, index);
 		const encoded = encrypt(JSON.stringify(next));
 
-		return jsonResponse({ problem: next.question, encoded });
-	} catch {
+		return jsonResponse({
+			index: next.index,
+			question: next.question,
+			answers: next.answers,
+			encoded,
+		});
+	} catch (e) {
+		console.log(e);
 		return jsonResponse({ error: ProblemError.UnexpectedError }, 500);
 	}
 }

@@ -20,7 +20,7 @@ describe("POST /api/problems", () => {
 		const data = await res.json();
 
 		expect(res.status).toBe(200);
-		expect(data.problem).toBe("Q0");
+		expect(data.question).toBe("Q0");
 		expect(data.encoded).toBeDefined();
 	});
 
@@ -42,7 +42,7 @@ describe("POST /api/problems", () => {
 		const data = await res.json();
 
 		expect(res.status).toBe(200);
-		expect(data.problem).toBe("Q1");
+		expect(data.question).toBe("Q1");
 		expect(data.encoded).toBeDefined();
 	});
 
