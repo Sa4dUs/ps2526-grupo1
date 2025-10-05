@@ -44,6 +44,7 @@ const handleLoginClick= async()=>{ //we need async to be able to use wait later 
 
 
     }catch (err){
+        console.log("LogIn error", err);
         setErrorMessage("Something happened during the login.");
     }
 }
