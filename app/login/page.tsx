@@ -61,7 +61,7 @@ return (
             <div className="group">
                 <label>Username:</label>
                 <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
-            </div><div className='group'>
+            </div><div className="roup">
                 <label>Password:</label>
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
             </div>
