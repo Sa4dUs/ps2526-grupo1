@@ -1,12 +1,12 @@
 //as far as I am concerned this is the only name that next.js accept to recognise 
-'use client'
+"use client"
  /*THE COMMENTS IN THIS PARTS ARE PERSONAL NOTES FOR ME TO LEARN, NOT REAL COMMENTS */
-import { useState } from 'react'
+import { useState } from "react"
 import { useRouter } from 'next/navigation';
 
 export default function LogInPage(){
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');   
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");   
     const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
 
