@@ -3,10 +3,16 @@ import { useContext } from "react"
 import { AuthUserContext } from "@/lib/AuthUserProvider";
 
 
-export default function userProfilePage(){
-    const user = useContext(AuthUserContext) as any; //without this any HTML die, due to line 8
-    //in AuthServiceProvider
+type userType = { 
+    displayName: string; 
+    email: string;
+};
 
+export default function UserProfilePage() { //if it is wroten as before npm run build fail.
+
+    const user = useContext(AuthUserContext) as userType | null; //any don't pass lint, I needed to create a type
+    //and also failed => type or null :|
+    
     //I added a few if's because if not the HTML dies
     if (!user){
         return(
