@@ -1,32 +1,68 @@
 'use client'
 
-import { useEffect, useState, FormEvent } from 'react'
-import Image from 'next/image'
+import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
 
-    useEffect(() => {
-        setupValidation()
-    }, [])
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        try {
+            if (!username || !email || !password) {
+                setErrorMessage("Por favor, rellene todos los campos del formulario");
+                return;
+            }
+            const nickname = document.getElementById('username') as HTMLInputElement;
+            const mail = document.getElementById('email') as HTMLInputElement;
+            const pw = document.getElementById('password') as HTMLInputElement;
+            const userStatus = nickname.classList.contains('correct');
+            const emailStatus = mail.classList.contains('correct');
+            const passwordStatus = pw.classList.contains('correct');
+            if (!userStatus || !emailStatus || !passwordStatus) {
+                setErrorMessage('Por favor, corrija los campos marcados en rojo o vacíos');
+                return;
+            }
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        // Comprobar pasar a JSON para comunicación con Backend
-        console.log("Submitting form")
-        router.push("/");
+            const response = await fetch("/api/auth/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    name: username,
+                }),
+            });
+            const data = await response.json();
+            switch (response.status) {
+                case 200:
+                    router.push("/");
+                    console.log("Registro correcto", data);
+                case 500:
+                    setErrorMessage("Internal error");
+            }
+        } catch (err) {
+            setErrorMessage("Ocurrió un error durante el registro");
+        }
     }
 
     /* HTML PART */
     return (
         <>
             <div className="bodyContainer">
+                {errorMessage && (
+                    <div>
+                        {errorMessage}
+                    </div>
+                )}
                 <div className="formDiv">
-                    <form id="signup-form" action="/" method="POST" onSubmit={handleSubmit}>
+                    <form id="signup-form" method="POST" onSubmit={handleSubmit}>
                         <label htmlFor="username">Introduce un nombre de usuario:</label>
                         <input
                             type="text"
@@ -34,7 +70,7 @@ export default function SignUpPage() {
                             name="username"
                             placeholder="Nombre de usuario"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            onChange={(e) => { setUsername(e.target.value); validateField("error-username", "username", "El nombre de usuario no es válido (no puede estar vacío)", e.target.value !== '') }}
                         />
                         <div id="error-username" className="error"></div>
 
@@ -45,7 +81,7 @@ export default function SignUpPage() {
                             name="email"
                             placeholder="email.address@dominio.com"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => { setEmail(e.target.value); validateField("error-email", "email", "El email no es válido o ya está en uso", (e.target.value.trim() !== '' && e.target.value.includes('@') && e.target.value.includes('.'))) }}
                         />
                         <div id="error-email" className="error"></div>
 
@@ -56,7 +92,7 @@ export default function SignUpPage() {
                             name="password"
                             placeholder="********"
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            onChange={(e) => { setPassword(e.target.value); validateField("error-password", "password", "La contraseña debe tener al menos 8 caracteres, una letra minúscula, una letra mayúscula y un número.", (e.target.value.length >= 8 && /[a-z]/.test(e.target.value) && /[A-Z]/.test(e.target.value) && /\d/.test(e.target.value))) }}
                         />
                         <div id="error-password" className="error"></div>
 
@@ -79,93 +115,32 @@ export default function SignUpPage() {
 }
 
 /* VALIDATION PART */
-function setupValidation() {
-    function showError(id: string, errorMessage: string) {
-        const error = document.getElementById(id)
-        if (error) {
-            error.textContent = errorMessage
-            error.style.display = 'block'
-        }
+function showError(id: string, errorMessage: string) {
+    const error = document.getElementById(id);
+    if (error) {
+        error.textContent = errorMessage;
+        error.style.display = 'block';
     }
+}
 
-    function hideError(id: string) {
-        const error = document.getElementById(id)
-        if (error) {
-            error.textContent = ''
-            error.style.display = 'none'
-        }
+function hideError(id: string) {
+    const error = document.getElementById(id);
+    if (error) {
+        error.textContent = '';
+        error.style.display = 'none';
     }
+}
 
-    function checkInput(
-        input: HTMLElement & { value: string; classList: DOMTokenList },
-        condition: boolean,
-        errorId: string,
-        errorMessage: string
-    ) {
-        if (condition) {
-            input.classList.remove('incorrect')
-            input.classList.add('correct')
-            hideError(errorId)
-        } else {
-            input.classList.remove('correct')
-            input.classList.add('incorrect')
-            showError(errorId, errorMessage)
-        }
+function validateField(errorId: string, field: string, errorMessage: string, condition: boolean) {
+    const inputField = document.getElementById(field)
+    if (!inputField) return;
+    if (condition) {
+        inputField.classList.remove('incorrect');
+        inputField.classList.add('correct');
+        hideError(errorId);
+    } else {
+        inputField.classList.remove('correct');
+        inputField.classList.add('incorrect');
+        showError(errorId, errorMessage);
     }
-
-    function checkPassword(str: string) {
-        return (
-            str.length >= 8 &&
-            /[a-z]/.test(str) &&
-            /[A-Z]/.test(str) &&
-            /\d/.test(str)
-        )
-    }
-
-    const username = document.getElementById('username') as HTMLInputElement | null
-    const email = document.getElementById('email') as HTMLInputElement | null
-    const password = document.getElementById('password') as HTMLInputElement | null
-    const form = document.getElementById('signup-form') as HTMLFormElement | null
-
-    if (!username || !email || !password || !form) return
-
-    username.addEventListener('input', () => {
-        checkInput(
-            username,
-            username.value.trim() !== '',
-            'error-username',
-            'El nombre de usuario no puede estar vacío.'
-        )
-    })
-
-    email.addEventListener('input', () => {
-        const valor = email.value.trim()
-        checkInput(
-            email,
-            valor.includes('@') && valor.includes('.'),
-            'error-email',
-            'Introduce un correo electrónico válido.'
-        )
-    })
-
-    password.addEventListener('input', () => {
-        checkInput(
-            password,
-            checkPassword(password.value),
-            'error-password',
-            'La contraseña debe tener al menos 8 caracteres, una letra minúscula, una letra mayúscula y un número.'
-        )
-    })
-
-    form.addEventListener('submit', () => {
-        const userStatus = username.classList.contains('correct')
-        const emailStatus = email.classList.contains('correct')
-        const passwordStatus = password.classList.contains('correct')
-
-        if (userStatus && emailStatus && passwordStatus) {
-            form.submit()
-        } else {
-           console.error('Por favor, corrige los campos marcados en rojo o vacíos.')
-        }
-    })
 }
