@@ -8,23 +8,16 @@ export default function SignUpPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState("");
+    const [usernameError, setUsernameError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState('');
     const router = useRouter();
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            if (!username || !email || !password) {
-                setErrorMessage("Por favor, rellene todos los campos del formulario");
-                return;
-            }
-            const nickname = document.getElementById('username') as HTMLInputElement;
-            const mail = document.getElementById('email') as HTMLInputElement;
-            const pw = document.getElementById('password') as HTMLInputElement;
-            const userStatus = nickname.classList.contains('correct');
-            const emailStatus = mail.classList.contains('correct');
-            const passwordStatus = pw.classList.contains('correct');
-            if (!userStatus || !emailStatus || !passwordStatus) {
-                setErrorMessage('Por favor, corrija los campos marcados en rojo o vacíos');
+            if (!username || !email || !password || usernameError || emailError || passwordError) {
+                setErrorMessage("Please, fill in all required fields in the form");
                 return;
             }
 
@@ -43,12 +36,13 @@ export default function SignUpPage() {
             switch (response.status) {
                 case 200:
                     router.push("/");
-                    console.log("Registro correcto", data);
+                    console.log("Successful registration: ", data);
                 case 500:
                     setErrorMessage("Internal error");
             }
         } catch (err) {
-            setErrorMessage("Ocurrió un error durante el registro");
+            console.log("SignUp error: ", err);
+            setErrorMessage("An error occurred during registration");
         }
     }
 
@@ -56,91 +50,62 @@ export default function SignUpPage() {
     return (
         <>
             <div className="bodyContainer">
-                {errorMessage && (
-                    <div>
-                        {errorMessage}
-                    </div>
-                )}
+                {errorMessage && (<div>{errorMessage}</div>)}
                 <div className="formDiv">
-                    <form id="signup-form" method="POST" onSubmit={handleSubmit}>
-                        <label htmlFor="username">Introduce un nombre de usuario:</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            placeholder="Nombre de usuario"
-                            value={username}
-                            onChange={(e) => { setUsername(e.target.value); validateField("error-username", "username", "El nombre de usuario no es válido (no puede estar vacío)", e.target.value !== '') }}
+                    <form onSubmit={handleSubmit}>
+                        <label htmlFor="username">Enter a username:</label>
+                        <input type="text" id="username" name="username" placeholder="Username" value={username}
+                            onChange={(e) => {
+                                setUsername(e.target.value);
+                                if (!e.target.value.trim()) {
+                                    setUsernameError("Username is not valid (cannot be empty)");
+                                } else {
+                                    setUsernameError('');
+                                }
+                            }}
                         />
-                        <div id="error-username" className="error"></div>
+                        {usernameError && <div className="error">{usernameError}</div>}
 
-                        <label htmlFor="email">Introduce un email:</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="email.address@dominio.com"
-                            value={email}
-                            onChange={(e) => { setEmail(e.target.value); validateField("error-email", "email", "El email no es válido o ya está en uso", (e.target.value.trim() !== '' && e.target.value.includes('@') && e.target.value.includes('.'))) }}
+                        <label htmlFor="email">Enter an email:</label>
+                        <input type="email" id="email" name="email" placeholder="email.address@domain.com" value={email}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                if (!e.target.value.trim() || !e.target.value.includes('@') || !e.target.value.includes('.')) {
+                                    setEmailError("Email is not valid or already in use");
+                                } else {
+                                    setEmailError('');
+                                }
+                            }}
                         />
-                        <div id="error-email" className="error"></div>
+                        {emailError && <div className="error">{emailError}</div>}
 
-                        <label htmlFor="password">Introduce una contraseña:</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            placeholder="********"
-                            value={password}
-                            onChange={(e) => { setPassword(e.target.value); validateField("error-password", "password", "La contraseña debe tener al menos 8 caracteres, una letra minúscula, una letra mayúscula y un número.", (e.target.value.length >= 8 && /[a-z]/.test(e.target.value) && /[A-Z]/.test(e.target.value) && /\d/.test(e.target.value))) }}
+                        <label htmlFor="password">Enter a password:</label>
+                        <input type="password" id="password" name="password" placeholder="********" value={password}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                if (!e.target.value.trim() || !(e.target.value.length >= 8) || !/[a-z]/.test(e.target.value) || !/[A-Z]/.test(e.target.value) || !/\d/.test(e.target.value)) {
+                                    setPasswordError("Password must be at least 8 characters and include lowercase, uppercase, and a number.");
+                                } else {
+                                    setPasswordError('');
+                                }
+                            }}
                         />
-                        <div id="error-password" className="error"></div>
+                        {passwordError && <div className="error">{passwordError}</div>}
 
                         <label htmlFor="instructions">
-                            Tu contraseña debe contener:
+                            Your password must contain:
                             <ul>
-                                <li>Al menos 8 caracteres</li>
-                                <li>Al menos una letra minúscula [a - z]</li>
-                                <li>Al menos una letra mayúscula [A - Z]</li>
-                                <li>Al menos un dígito numérico [0 - 9]</li>
+                                <li>At least 8 characters</li>
+                                <li>At least one lowercase letter [a - z]</li>
+                                <li>At least one uppercase letter [A - Z]</li>
+                                <li>At least one numeric digit [0 - 9]</li>
                             </ul>
                         </label>
 
-                        <button type="submit">Registrarse</button>
+                        <button type="submit">Sign up</button>
                     </form>
                 </div>
             </div>
         </>
     )
-}
-
-/* VALIDATION PART */
-function showError(id: string, errorMessage: string) {
-    const error = document.getElementById(id);
-    if (error) {
-        error.textContent = errorMessage;
-        error.style.display = 'block';
-    }
-}
-
-function hideError(id: string) {
-    const error = document.getElementById(id);
-    if (error) {
-        error.textContent = '';
-        error.style.display = 'none';
-    }
-}
-
-function validateField(errorId: string, field: string, errorMessage: string, condition: boolean) {
-    const inputField = document.getElementById(field)
-    if (!inputField) return;
-    if (condition) {
-        inputField.classList.remove('incorrect');
-        inputField.classList.add('correct');
-        hideError(errorId);
-    } else {
-        inputField.classList.remove('correct');
-        inputField.classList.add('incorrect');
-        showError(errorId, errorMessage);
-    }
 }
