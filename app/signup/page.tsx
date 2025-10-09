@@ -13,7 +13,7 @@ export default function SignUpPage() {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            if (!username || !email || !password || errorMessage) {
+            if (!username || !email || !password) {
                 setErrorMessage("Please, fill in all required fields in the form");
                 return;
             }
@@ -50,7 +50,7 @@ export default function SignUpPage() {
     };
 
     const isValidUsername = (value: string) => value.trim().length > 0;
-    const isValidEmail = (value: string) => value.includes("@") && value.includes(".");
+    const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(value);
     const isValidPassword = (value: string) => value.length >= 8 && /[a-z]/.test(value) && /[A-Z]/.test(value) && /\d/.test(value);
 
     /* HTML PART */
