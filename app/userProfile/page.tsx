@@ -21,11 +21,6 @@ export default function UserProfilePage() { //if it is wroten as before npm run 
             router.push("/");
             return(<p>You are not authenticated</p>);
     }
-    if (user===null){
-        console.log("You are null?");
-        router.push("/");
-        return (<p>You are null?</p>)
-    }
     return(
         <div>
             <h1>Your Profile</h1>
