@@ -47,20 +47,18 @@ export default function TrainingPage() {
               </button>
             ))}
           </div>
+        <Link href="/" className="mt-4 px-6 py-2 bg-white text-black border border-black rounded-md hover:bg-gray-100 text-center">Back home</Link>
         </>
       ) : (
         <div className="bg-white rounded-xl shadow-md p-8 w-full max-w-3xl">
-          <h1 className="text-2xl font-bold text-red-600 mb-6">
-            Quick problems - Level {level}
-          </h1>
+          <h1 className="text-2xl font-bold text-red-600 mb-6">Quick problems - Level {level}</h1>
 
           <div className="bg-gray-300 h-40 rounded-md flex items-center justify-center mb-6 overflow-hidden">
-            <img src="/mathimage.png" alt="Math Problem Illustration" className="w-full h-full object-cover"/>
+            <img src="mathimage.png" alt="Math Problem Illustration" className="w-full h-full object-cover"/>
           </div>
 
           <div className="flex flex-col items-center text-center">
             <h2 className="text-xl font-semibold mb-6 text-black">{problem?.question}</h2>
-
             <div className="grid grid-cols-1 gap-3 w-full max-w-md">
               {problem?.answers.map((ans, i) => {
                 let btnClass =
@@ -80,20 +78,11 @@ export default function TrainingPage() {
             </div>
 
             <div className="flex flex-col items-center gap-3 mt-8">
-              <button
-                className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                onClick={() => handleLevelClick(level)}
-              >
-                Next Problem
-              </button>
+              <button className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600" onClick={() => handleLevelClick(level)}>Next Problem</button>
 
               <button
-                className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                onClick={() => setLevel(null)}
-              >
-                Change level
-              </button>
-              <Link href="/" className="px-6 py-2 bg-white-500 text-black rounded-md hover:bg-white-600 text-center">Back home</Link>
+                className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600" onClick={() => setLevel(null)}>Change level</button>
+                  <Link href="/" className="px-6 py-2 bg-white text-black border border-black rounded-md hover:bg-gray-100 text-center">Back home</Link>
             </div>
           </div>
         </div>
