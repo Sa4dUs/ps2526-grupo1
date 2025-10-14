@@ -1,27 +1,56 @@
+import { Button } from "@/components/ui/button";
+
 export default function ProblemComponent({
 	question,
 	answers,
+	selectedAnswer,
+	isCorrect,
 	onAnswer,
 }: {
 	question: string;
 	answers: number[];
+	selectedAnswer?: number | null;
+	correctAnswer?: number | null;
+	isCorrect?: boolean | null;
 	onAnswer: (selected: number) => void;
 }) {
 	return (
-		<div className="bg-white dark:bg-neutral-800 p-4 rounded border border-neutral-200 dark:border-neutral-700 transition-colors">
-			<p className="text-base font-medium mb-4">{question}</p>
-			<ul className="space-y-2">
-				{answers.map((ans, i) => (
-					<li key={i}>
-						<button
+		<div className="w-full">
+			<h2 className="text-xl font-semibold mb-6 text-center">
+				{question}
+			</h2>
+			<div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
+				{answers.map((ans, i) => {
+					let variant:
+						| "default"
+						| "destructive"
+						| "secondary"
+						| "success" = "default";
+					let className =
+						"w-full py-3 text-lg font-medium transition-all";
+
+					if (selectedAnswer === null) variant = "default";
+					else if (selectedAnswer && isCorrect)
+						className +=
+							" bg-green-500 text-white hover:bg-green-600";
+					else if (selectedAnswer && !isCorrect)
+						className += " bg-red-500 text-white hover:bg-red-600";
+					else
+						className +=
+							" bg-muted text-muted-foreground opacity-70";
+					return (
+						<Button
+							variant={"default"}
+							key={i}
+							className="w-full py-3 text-lg font-medium rounded-lg transition-all bg-default hover:bg-accent text-foreground"
 							onClick={() => onAnswer(ans)}
-							className="w-full py-2 px-4 bg-neutral-100 dark:bg-neutral-700 rounded hover:bg-neutral-200 dark:hover:bg-neutral-600 transition text-left"
+							disabled={selectedAnswer != null}
 						>
 							{ans}
-						</button>
-					</li>
-				))}
-			</ul>
+						</Button>
+					);
+				})}
+			</div>
 		</div>
 	);
 }

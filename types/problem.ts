@@ -14,6 +14,7 @@ export enum ProblemError {
 export type ResponseError = { error: ProblemError };
 
 export type ResponseSuccess = {
+	solution: number;
 	index: number;
 	question: string;
 	answers: number[];
