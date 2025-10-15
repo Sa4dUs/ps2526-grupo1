@@ -20,11 +20,11 @@ export default function TrainingPage() {
 
 	function handleLevelClick(lvl: number) {
 		const generated = generateProblems(lvl);
-		if (!generated) {
+		if (!generated || typeof generated.correctAnswer !== "number") {
 			return;
 		}
 		setLevel(lvl);
-		setProblem(generated);
+		setProblem(generated as Problem);
 		setSelected(null);
 		setIsCorrect(null);
 	}
@@ -38,11 +38,10 @@ export default function TrainingPage() {
 	function handleNextProblem() {
 		if (level === null) return;
 		const next = generateProblems(level);
-		if (!next) {
-			console.error("❌ generateProblems devolvió undefined");
+		if (!next || typeof next.correctAnswer !== "number") {
 			return;
 		}
-		setProblem(next);
+		setProblem(next as Problem);
 		setSelected(null);
 		setIsCorrect(null);
 	}
