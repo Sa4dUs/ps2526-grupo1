@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthUserProvider } from "./context/AuthUserProvider";
+import Navbar from "./components/nav";
+import Footer from "./components/footer";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -20,17 +22,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
 	children,
-}: Readonly<{
+}: {
 	children: React.ReactNode;
-}>) {
-	//in rocket they talk of this as _app but, from Node 13 it does not exists XD.
-	//The documentation is in the part they talk of Creating a user context
+}) {
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen bg-background text-foreground`}
 			>
-				<AuthUserProvider>{children}</AuthUserProvider>
+				<AuthUserProvider>
+					<Navbar />
+
+					<main className="flex flex-col flex-grow items-center justify-center px-4 py-6 w-full">
+						{children}
+					</main>
+
+					<Footer />
+				</AuthUserProvider>
 			</body>
 		</html>
 	);

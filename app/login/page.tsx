@@ -54,9 +54,9 @@ export default function LogInPage() {
 	}, [user, loading, router]);
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground px-4">
+		<>
 			{errorMessage && (
-				<Alert variant="destructive" className="mb-6 max-w-md w-full">
+				<Alert variant="destructive" className="mb-6 w-full max-w-md">
 					<AlertDescription>{errorMessage}</AlertDescription>
 				</Alert>
 			)}
@@ -96,6 +96,6 @@ export default function LogInPage() {
 					</form>
 				</CardContent>
 			</Card>
-		</div>
+		</>
 	);
 }
