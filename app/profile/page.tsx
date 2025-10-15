@@ -23,6 +23,12 @@ export default function UserProfilePage() {
 		router.push("/login");
 	};
 
+	const getAvatar = (email?: string) => {
+		return `https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(
+			email ?? ""
+		)}`;
+	};
+
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground px-4">
 			<Card className="w-full max-w-md shadow-lg">
@@ -32,9 +38,7 @@ export default function UserProfilePage() {
 
 				<CardContent className="flex flex-col items-center gap-4">
 					<img
-						src={
-							user?.photoURL || "https://i.pravatar.cc/150?img=3"
-						}
+						src={user?.photoURL || getAvatar(user?.email ?? "")}
 						alt="User Avatar"
 						className="w-24 h-24 rounded-full border border-gray-300 dark:border-gray-700"
 					/>

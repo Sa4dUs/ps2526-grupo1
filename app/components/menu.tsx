@@ -4,10 +4,13 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { getAuth, signOut } from "firebase/auth";
 import app from "@/lib/firebaseClient";
+import { useContext } from "react";
+import { AuthUserContext } from "../context/AuthUserProvider";
 
 export default function UserMenu() {
 	const router = useRouter();
 	const auth = getAuth(app);
+	const { user } = useContext(AuthUserContext);
 
 	const handleLogout = async () => {
 		await signOut(auth);
@@ -21,7 +24,9 @@ export default function UserMenu() {
 	return (
 		<div className="fixed top-6 right-6 flex items-center gap-4 z-50">
 			<img
-				src="https://i.pravatar.cc/150?img=3"
+				src={`https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(
+					user?.email ?? ""
+				)}`}
 				alt="User Avatar"
 				className="w-10 h-10 rounded-full border border-gray-300 dark:border-gray-700 cursor-pointer"
 				onClick={goToProfile}
