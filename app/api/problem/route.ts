@@ -38,6 +38,7 @@ export async function POST(req: Request) {
 		const encoded = encrypt(JSON.stringify(next));
 
 		return jsonResponse({
+			solution: next.correctAnswer,
 			index: next.index,
 			question: next.question,
 			answers: next.answers,
