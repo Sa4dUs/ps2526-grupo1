@@ -1,62 +1,58 @@
-//as far as I am concerned this is the only name that next.js accept to recognise
 "use client";
-/*THE COMMENTS IN THIS PARTS ARE PERSONAL NOTES FOR ME TO LEARN, NOT REAL COMMENTS */
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/app/context/AuthUserProvider";
 
 export default function LogInPage() {
-	const [username, setUsername] = useState("");
+	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [errorMessage, setErrorMessage] = useState("");
 	const router = useRouter();
 
-	const handleLoginClick = async (e) => {
-		//we need async to be able to use wait later on.
-		//try-catch is react version of angular's .valid
+	const { signIn, user, loading } = useAuth();
+
+	const handleLoginClick = async (e: React.FormEvent) => {
 		e.preventDefault();
 
 		try {
-			if (!username || !password) {
-				setErrorMessage(
-					"The reason why you have fingers is the reason it failed :)"
-				);
+			if (!email || !password) {
+				setErrorMessage("Please enter both email and password");
 				return;
 			}
-			//to use as backend firebase we need JSON format not HTML (append won't work)
-			const response = await fetch("/api/auth/login", {
-				//George route
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					email: username,
-					password: password,
-				}),
-			});
-			const data = await response.json();
-			//here the switch case
-			switch (response.status) {
-				case 200:
-					router.push("/"); //@TODO, this is a big shit
-					console.log("Login worked", data);
-				case 401:
-					setErrorMessage("Invalid credentials, you fool");
-				case 500:
-					setErrorMessage("Internal error, PANIC");
+
+			await signIn(email, password);
+			router.push("/");
+		} catch (error: unknown) {
+			console.error("Login error:", error);
+			if (error && typeof error === "object" && "code" in error) {
+				const firebaseError = error as { code: string };
+				if (firebaseError.code === "auth/invalid-credential") {
+					setErrorMessage("Invalid email or password");
+				} else if (firebaseError.code === "auth/too-many-requests") {
+					setErrorMessage(
+						"Too many attempts. Please try again later"
+					);
+				} else {
+					setErrorMessage("An error occurred during login");
+				}
+			} else {
+				setErrorMessage("An unexpected error occurred");
 			}
-		} catch (err) {
-			console.log("LogIn error", err);
-			setErrorMessage("Something happened during the login.");
 		}
 	};
 
-	/* HTML PART*/
+	useEffect(() => {
+		if (!loading && user) {
+			router.push("/");
+		}
+	}, [user, loading, router]);
+
 	return (
 		<div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground px-4">
 			{errorMessage && (
@@ -70,13 +66,16 @@ export default function LogInPage() {
 					<h2 className="text-xl font-semibold text-center">Login</h2>
 				</CardHeader>
 				<CardContent>
-					<form className="flex flex-col gap-4">
+					<form
+						className="flex flex-col gap-4"
+						onSubmit={handleLoginClick}
+					>
 						<div className="space-y-2">
-							<Label>Username:</Label>
+							<Label>Email:</Label>
 							<Input
-								type="text"
-								value={username}
-								onChange={(e) => setUsername(e.target.value)}
+								type="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
 								placeholder="Enter your email"
 							/>
 						</div>
@@ -91,10 +90,7 @@ export default function LogInPage() {
 							/>
 						</div>
 
-						<Button
-							onClick={handleLoginClick}
-							className="mt-4 w-full"
-						>
+						<Button type="submit" className="mt-4 w-full">
 							Login
 						</Button>
 					</form>

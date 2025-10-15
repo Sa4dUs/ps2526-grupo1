@@ -1,40 +1,23 @@
 "use client";
 
 import { useContext } from "react";
-import { getAuth, signOut } from "firebase/auth";
-import { AuthUserContext } from "@/lib/AuthUserProvider";
-import app from "@/lib/firebaseClient";
+import { AuthUserContext } from "@/app/context/AuthUserProvider";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import UserMenu from "./components/menu";
 
 export default function Home() {
-	const user = useContext(AuthUserContext);
-	const auth = getAuth(app);
-
-	const handleLogout = async () => {
-		await signOut(auth);
-	};
+	const { user } = useContext(AuthUserContext);
 
 	return (
 		<div className="flex flex-col min-h-screen bg-background text-foreground">
-			{/* Header */}
 			<header className="flex items-center justify-between px-8 py-6 border-b border-border">
 				<h1 className="text-2xl font-semibold tracking-tight">App</h1>
 
 				<nav className="flex items-center space-x-4">
 					{user ? (
-						<>
-							<Link href="/profile">
-								<Button variant="ghost">Profile</Button>
-							</Link>
-							<Button
-								variant="destructive"
-								onClick={handleLogout}
-							>
-								Logout
-							</Button>
-						</>
+						<UserMenu />
 					) : (
 						<>
 							<Link href="/login">
@@ -48,7 +31,6 @@ export default function Home() {
 				</nav>
 			</header>
 
-			{/* Main */}
 			<main className="flex flex-col flex-grow items-center justify-center gap-10 px-4 text-center">
 				<Card className="w-full max-w-md shadow-lg">
 					<CardHeader>
