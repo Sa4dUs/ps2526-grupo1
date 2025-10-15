@@ -18,11 +18,9 @@ export default function TrainingPage() {
 	const [selected, setSelected] = useState<number | null>(null);
 	const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
-	// --- Cuando se elige nivel, genera el primer problema
 	function handleLevelClick(lvl: number) {
 		const generated = generateProblems(lvl);
 		if (!generated) {
-			console.error("❌ generateProblems devolvió undefined");
 			return;
 		}
 		setLevel(lvl);
@@ -31,14 +29,12 @@ export default function TrainingPage() {
 		setIsCorrect(null);
 	}
 
-	// --- Selección de respuesta
 	function handleAnswerClick(answer: number) {
 		if (selected !== null || !problem) return;
 		setSelected(answer);
 		setIsCorrect(answer === problem.correctAnswer);
 	}
 
-	// --- Generar nuevo problema dentro del mismo nivel
 	function handleNextProblem() {
 		if (level === null) return;
 		const next = generateProblems(level);
@@ -54,7 +50,6 @@ export default function TrainingPage() {
 	return (
 		<div className="flex flex-col items-center justify-center w-full flex-grow">
 			{level === null ? (
-				// --- Pantalla de selección de nivel
 				<>
 					<h1 className="text-3xl font-bold mb-6 text-center text-primary">
 						Select Training Level
@@ -78,7 +73,6 @@ export default function TrainingPage() {
 					</Link>
 				</>
 			) : (
-				// --- Pantalla de juego
 				<Card className="w-full max-w-3xl shadow-lg">
 					<CardHeader>
 						<h1 className="text-2xl font-bold text-primary text-center">
