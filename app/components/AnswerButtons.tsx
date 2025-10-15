@@ -25,10 +25,9 @@ export function AnswerButtons({
 					className += " bg-gray-800 text-white hover:bg-gray-700";
 				else if (ans === selected && isCorrect)
 					className += " bg-green-500 text-white hover:bg-green-600";
-				else if (ans === selected && !isCorrect)
-					className += " bg-red-500 text-white hover:bg-red-600";
-				else if (ans === correctAnswer)
-					className += " bg-green-500 text-white";
+				else if (ans === selected)
+					className +=
+						" bg-yellow-500 text-white hover:bg-yellow-600";
 				else className += " bg-gray-700 text-white opacity-70";
 
 				return (

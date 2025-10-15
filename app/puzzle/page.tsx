@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { ResponsePayload, ResponseSuccess, Solution } from "@/types/problem";
-import Link from "next/link";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useProblemGame } from "../hooks/useProblemGame";
+import { AnswerButtons } from "../components/AnswerButtons";
 
 enum GameState {
 	Loading,
@@ -22,18 +24,26 @@ async function requestProblem(solution?: Solution): Promise<ResponsePayload> {
 }
 
 export default function PuzzlePage() {
-	const [problem, setProblem] = useState<ResponseSuccess | null>(null);
-	const [gameState, setGameState] = useState<GameState>(GameState.Loading);
-	const [score, setScore] = useState<number>(0);
-	const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-	const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+	const [score, setScore] = useState(0);
+	const [gameState, setGameState] = useState(GameState.Loading);
+
+	const {
+		problem,
+		selected,
+		isCorrect,
+		setProblem,
+		selectAnswer,
+		setSelected,
+		setIsCorrect,
+	} = useProblemGame<ResponseSuccess>(async () =>
+		requestProblem().then((res) => res as ResponseSuccess)
+	);
 
 	const startNewGame = async () => {
 		setScore(0);
 		setGameState(GameState.Loading);
-		setSelectedAnswer(null);
+		setSelected(null);
 		setIsCorrect(null);
-
 		const res = await requestProblem();
 		setProblem(res as ResponseSuccess);
 		setGameState(GameState.Playing);
@@ -44,9 +54,8 @@ export default function PuzzlePage() {
 	}, []);
 
 	const handleAnswer = async (answer: number) => {
-		if (!problem || selectedAnswer !== null) return;
-
-		setSelectedAnswer(answer);
+		if (!problem || selected !== null) return;
+		selectAnswer(answer);
 
 		const response = await requestProblem({
 			solution: answer,
@@ -55,9 +64,6 @@ export default function PuzzlePage() {
 
 		if ("error" in response) {
 			setGameState(GameState.GameOver);
-			setProblem(null);
-			setSelectedAnswer(null);
-			setIsCorrect(null);
 			return;
 		}
 
@@ -65,9 +71,9 @@ export default function PuzzlePage() {
 		setIsCorrect(true);
 
 		setTimeout(async () => {
-			const nextProblem = await requestProblem();
-			setProblem(nextProblem as ResponseSuccess);
-			setSelectedAnswer(null);
+			const next = await requestProblem();
+			setProblem(next as ResponseSuccess);
+			setSelected(null);
 			setIsCorrect(null);
 		}, 500);
 	};
@@ -86,36 +92,12 @@ export default function PuzzlePage() {
 							{problem.question}
 						</h2>
 
-						<div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
-							{problem.answers.map((ans, i) => {
-								let className =
-									"w-full py-3 text-lg font-medium transition-all rounded-lg";
-
-								if (selectedAnswer === null)
-									className +=
-										" bg-gray-800 text-white hover:bg-gray-700";
-								else if (ans === selectedAnswer && isCorrect)
-									className +=
-										" bg-green-500 text-white hover:bg-green-600";
-								else if (ans === selectedAnswer)
-									className +=
-										" bg-yellow-500 text-white hover:bg-yellow-600";
-								else
-									className +=
-										" bg-gray-700 text-white opacity-70";
-
-								return (
-									<Button
-										key={i}
-										className={className}
-										onClick={() => handleAnswer(ans)}
-										disabled={selectedAnswer !== null}
-									>
-										{ans}
-									</Button>
-								);
-							})}
-						</div>
+						<AnswerButtons
+							answers={problem.answers}
+							selected={selected}
+							isCorrect={isCorrect}
+							onSelect={handleAnswer}
+						/>
 
 						<Link href="/">
 							<Button
