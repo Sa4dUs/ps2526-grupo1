@@ -1,86 +1,137 @@
-'use client'
+"use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/app/context/AuthUserProvider";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "@/lib/firebaseClient";
 
 export default function SignUpPage() {
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [errorMessage, setErrorMessage] = useState("");
-    const router = useRouter();
+	const [username, setUsername] = useState("");
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [errorMessage, setErrorMessage] = useState("");
+	const router = useRouter();
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        try {
-            if (!username || !email || !password) {
-                setErrorMessage("Please, fill in all required fields in the form");
-                return;
-            }
+	const { user, loading } = useAuth();
 
-            const response = await fetch("/api/auth/signup", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password,
-                    name: username,
-                }),
-            });
-            const data = await response.json();
-            switch (response.status) {
-                case 200:
-                    router.push("/");
-                    console.log("Successful registration: ", data);
-                case 500:
-                    setErrorMessage("Internal error");
-            }
-        } catch (err) {
-            console.log("SignUp error: ", err);
-            setErrorMessage("An error occurred during registration");
-        }
-    }
+	const handleSignUp = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setErrorMessage("");
 
-    const handler = (setValue: (val: string) => void, validator: (val: string) => boolean, errorText: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setValue(value);
-        setErrorMessage(validator(value) ? '' : errorText);
-    };
+		if (!username || !email || !password) {
+			setErrorMessage("Please fill in all required fields.");
+			return;
+		}
 
-    const isValidUsername = (value: string) => value.trim().length > 0;
-    const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+.[^\s@]+$/.test(value);
-    const isValidPassword = (value: string) => value.length >= 8 && /[a-z]/.test(value) && /[A-Z]/.test(value) && /\d/.test(value);
+		try {
+			const userCredential = await createUserWithEmailAndPassword(
+				auth,
+				email,
+				password
+			);
 
-    /* HTML PART */
-    return (
-        <div className="bodyContainer">
-            {errorMessage && (<div className="error">{errorMessage}</div>)}
-            <div className="formDiv">
-                <form onSubmit={handleSubmit}>
-                    <label htmlFor="username">Enter a username:</label>
-                    <input type="text" id="username" name="username" placeholder="Username" value={username} onChange={handler(setUsername, isValidUsername, "Username cannot be empty")}/>
+			await updateProfile(userCredential.user, {
+				displayName: username,
+			});
 
-                    <label htmlFor="email">Enter an email:</label>
-                    <input type="email" id="email" name="email" placeholder="email.address@domain.com" value={email} onChange={handler(setEmail, isValidEmail, "Email is not valid or already in use")}/>
+			router.push("/");
+		} catch (error: unknown) {
+			console.error("Signup error:", error);
+			if (
+				typeof error === "object" &&
+				error !== null &&
+				"code" in error
+			) {
+				const code = (error as { code: string }).code;
+				if (code === "auth/email-already-in-use") {
+					setErrorMessage("Email is already in use.");
+				} else if (code === "auth/weak-password") {
+					setErrorMessage(
+						"Password should be at least 6 characters."
+					);
+				} else {
+					setErrorMessage("An error occurred during registration.");
+				}
+			} else {
+				setErrorMessage("An error occurred during registration.");
+			}
+		}
+	};
 
-                    <label htmlFor="password">Enter a password:</label>
-                    <input type="password" id="password" name="password" placeholder="********" value={password} onChange={handler(setPassword, isValidPassword, "Password must be at least 8 characters and include lowercase, uppercase, and a number.")}/>
+	useEffect(() => {
+		if (!loading && user) {
+			router.push("/");
+		}
+	}, [user, loading, router]);
 
-                    <label htmlFor="instructions">
-                        Your password must contain:
-                        <ul>
-                            <li>At least 8 characters</li>
-                            <li>At least one lowercase letter [a - z]</li>
-                            <li>At least one uppercase letter [A - Z]</li>
-                            <li>At least one numeric digit [0 - 9]</li>
-                        </ul>
-                    </label>
+	return (
+		<>
+			{errorMessage && (
+				<Alert variant="destructive" className="mb-6 w-full max-w-md">
+					<AlertDescription>{errorMessage}</AlertDescription>
+				</Alert>
+			)}
 
-                    <button type="submit">Sign up</button>
-                </form>
-            </div>
-        </div>
-    )
+			<Card className="w-full max-w-md shadow-lg">
+				<CardHeader>
+					<h2 className="text-xl font-semibold text-center">
+						Sign Up
+					</h2>
+				</CardHeader>
+				<CardContent>
+					<form
+						onSubmit={handleSignUp}
+						className="flex flex-col gap-4"
+					>
+						<div className="space-y-2">
+							<Label>Username:</Label>
+							<Input
+								type="text"
+								value={username}
+								onChange={(e) => setUsername(e.target.value)}
+								placeholder="Enter a username"
+								required
+							/>
+						</div>
+
+						<div className="space-y-2">
+							<Label>Email:</Label>
+							<Input
+								type="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								placeholder="Enter your email"
+								required
+							/>
+						</div>
+
+						<div className="space-y-2">
+							<Label>Password:</Label>
+							<Input
+								type="password"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								placeholder="Enter your password"
+								required
+							/>
+						</div>
+
+						<p className="text-xs text-muted-foreground text-left">
+							Password must be at least 6 characters long.
+						</p>
+
+						<Button type="submit" className="mt-4 w-full">
+							Create Account
+						</Button>
+					</form>
+				</CardContent>
+			</Card>
+		</>
+	);
 }
