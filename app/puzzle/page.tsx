@@ -70,9 +70,8 @@ export default function PuzzlePage() {
 		setScore((prev) => prev + 1);
 		setIsCorrect(true);
 
-		setTimeout(async () => {
-			const next = await requestProblem();
-			setProblem(next as ResponseSuccess);
+		setTimeout(() => {
+			setProblem(response as ResponseSuccess);
 			setSelected(null);
 			setIsCorrect(null);
 		}, 500);
