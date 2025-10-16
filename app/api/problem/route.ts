@@ -34,7 +34,8 @@ export async function POST(req: Request) {
 			index++;
 		}
 
-		const next = createProblem(index, index);
+		const difficulty = Math.min(4, Math.floor(Math.log2(index + 1)));
+		const next = createProblem(index, difficulty);
 		const encoded = encrypt(JSON.stringify(next));
 
 		return jsonResponse({
