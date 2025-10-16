@@ -5,15 +5,24 @@ import { Button } from "@/components/ui/button";
 import { useContext } from "react";
 import { AuthUserContext } from "../context/AuthUserProvider";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Navbar() {
 	const { user } = useContext(AuthUserContext);
 
 	return (
 		<header className="flex items-center justify-between px-8 py-6 border-b border-border">
-			<h1 className="text-2xl font-semibold tracking-tight">
-				<Link href="/">App</Link>
-			</h1>
+			<Link href="/" className="flex items-center gap-3">
+				<Image
+					src={"/logo.png"}
+					alt="EduMath"
+					width={100}
+					height={100}
+				/>
+				<h1 className="text-2xl font-semibold tracking-tight">
+					EduMath
+				</h1>
+			</Link>
 
 			<nav className="flex items-center space-x-4">
 				{user ? (
