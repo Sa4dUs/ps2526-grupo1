@@ -13,12 +13,7 @@ export default function Navbar() {
 	return (
 		<header className="flex items-center justify-between px-8 py-6 border-b border-border">
 			<Link href="/" className="flex items-center gap-3">
-				<Image
-					src={"/logo.png"}
-					alt="EduMath"
-					width={100}
-					height={100}
-				/>
+				<Image src={"/logo.png"} alt="EduMath" width={50} height={50} />
 				<h1 className="text-2xl font-semibold tracking-tight">
 					EduMath
 				</h1>
