@@ -1,5 +1,5 @@
 "use client";
-import { useContext,  useState } from "react";
+import { useContext,  useEffect,  useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthUserContext } from "@/app/context/AuthUserProvider";
 import { Button } from "@/components/ui/button";
@@ -12,46 +12,41 @@ export default function UserProfilePage() {
 	const { user } = useContext(AuthUserContext);
 
 	const [achievements, setAchievements] = useState<any[]>([]);
-	const [loadingAchievements, setLoadingAchievements] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 
 	const handleLogout = async () => {
-		const auth = getAuth();
+		const auth = getAuth(); //hace falta esto ¿? o sea, signOut no usa auth en AuthUserProvider¿?
 		await signOut(auth);
 		router.push("/login");
 	};
 
-	const getAchievements = async () => {
-		try {
-			setLoadingAchievements(true);
-			setErrorMessage("");
+	useEffect(()=> {
+ 		// const fetchAchievements = async () => {
+		// try {
+		//     	const headers: Record<string, string> = {
+		// 			"Accept": "application/json" 
+		// 		};
+		//        	const res = await fetch("/api/achievements", {
+		// 			method: "GET", 
+		// 			headers 
+		// 		});
 
-			const headers: Record<string, string> = {
-				"Accept": "application/json",
-			};
-
-
-			// const res = await fetch("falta la ruta", {
-			// 	method: "GET",
-			// 	headers,
-			// });
-
-			// if (!res.ok) 
-			// 	throw new Error(`HTTP ${res.status}`);
-			// const data = await res.json();
+		//         if (!res.ok) 
+		// 			throw new Error(`HTTP ${res.status}`);
+		//        	const data = await res.json();
+		//       	setAchievements(data);
+		//    	} catch (err: any) {
+		//     	console.error("Error fetching achievements:", err);
+		// 		setErrorMessage(err.message || "Failed to fetch achievements");
+		//    	}
+		//  };
+		//  fetchAchievements();
 			setAchievements([
 			{ title: "Primer inicio de sesión" },
 			{ title: "Explorador del perfil" },
 			{ title: "Desbloqueado: Probando Achievements" },
-		]);
-		} catch (err: any) {
-			console.error("Error fetching achievements:", err);
-			setErrorMessage(err.message || "Failed to fetch achievements");
-		} finally {
-			setLoadingAchievements(false);
-		}
-	};
-
+			]);
+		}, []);
 
 
 	const getAvatar = (email?: string) =>
@@ -91,16 +86,6 @@ export default function UserProfilePage() {
 						</Alert>
 					)}
 
-					<Button
-						variant="outline"
-						size="sm"
-						onClick={getAchievements}
-						disabled={loadingAchievements}
-						className="w-full"
-					>
-						{loadingAchievements ? "Loading..." : "Load Achievements"}
-					</Button>
-
 					{achievements.length > 0 && (
 						<ul className="mt-3 text-left">
 							{achievements.map((a, i) => (
@@ -111,7 +96,6 @@ export default function UserProfilePage() {
 						</ul>
 					)}
 				</div>
-
 
 				<Button
 					variant="outline"
