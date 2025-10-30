@@ -5,18 +5,16 @@ import { AuthUserContext } from "@/app/context/AuthUserProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { getAuth, signOut } from "firebase/auth";
 
 export default function UserProfilePage() {
 	const router = useRouter();
-	const { user } = useContext(AuthUserContext);
-
-	const [achievements, setAchievements] = useState<any[]>([]);
+	const { user, signOut } = useContext(AuthUserContext);
+	interface Achievement{title:string;}
+	const [achievements, setAchievements] = useState<Achievement[]>([]);
 	const [errorMessage, setErrorMessage] = useState("");
 
 	const handleLogout = async () => {
-		const auth = getAuth(); //hace falta esto ¿? o sea, signOut no usa auth en AuthUserProvider¿?
-		await signOut(auth);
+		await signOut();
 		router.push("/login");
 	};
 
