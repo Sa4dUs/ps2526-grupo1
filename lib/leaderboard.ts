@@ -1,4 +1,4 @@
-import { db } from '@/lib/firebaseAdmin';
+import { db } from "@/lib/firebaseAdmin";
 
 interface LeaderboardEntry {
     name: string;
@@ -12,13 +12,13 @@ export async function get_leaderboard(
     user?: string
 ): Promise<LeaderboardEntry[]> {
     const snapshot = await db
-        .collection('users')
-        .orderBy('best_score', 'desc')
+        .collection("users")
+        .orderBy("best_score", "desc")
         .get();
 
     const allUsers: LeaderboardEntry[] = snapshot.docs.map((doc, index) => ({
-        name: doc.get('name'),
-        best_score: doc.get('best_score'),
+        name: doc.get("name"),
+        best_score: doc.get("best_score"),
         rank: index + 1,
     }));
 
