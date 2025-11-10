@@ -22,19 +22,20 @@ export async function get_leaderboard(
         rank: index + 1,
     }));
 
+    const fromIndex = Math.max(0, from - 1)
 
     if (!user) {
-        return allUsers.slice(from, to);
+        return allUsers.slice(fromIndex, to);
     }
 
     const userIndex = allUsers.findIndex(u => u.name === user);
 
     if (userIndex === -1) {
-        return allUsers.slice(from, to);
+        return allUsers.slice(fromIndex, to);
     }
 
     let end = Math.min(allUsers.length, userIndex + 1);
-    const start = Math.max(0, end - to - from - 1);
+    const start = Math.max(0, end - to - fromIndex - 1);
 
     if (userIndex + 1 < to) {
         end = Math.min(allUsers.length, to);
