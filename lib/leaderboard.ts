@@ -34,7 +34,7 @@ export async function get_leaderboard(
     }
 
     let end = Math.min(allUsers.length, userIndex + 1);
-    let start = Math.max(0, end - to - from - 1);
+    const start = Math.max(0, end - to - from - 1);
 
     if (userIndex + 1 < to) {
         end = Math.min(allUsers.length, to);
