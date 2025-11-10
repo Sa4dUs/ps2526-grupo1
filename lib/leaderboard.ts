@@ -17,8 +17,8 @@ export async function get_leaderboard(
         .get();
 
     const allUsers: LeaderboardEntry[] = snapshot.docs.map((doc, index) => ({
-        name: doc.get("name"),
-        best_score: doc.get("best_score"),
+        name: doc.get("name") ?? "Unnamed",
+        best_score: doc.get("best_score") ?? 0,
         rank: index + 1,
     }));
 
