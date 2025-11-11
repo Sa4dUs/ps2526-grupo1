@@ -1,6 +1,7 @@
 export type Solution = {
 	solution: number;
 	encoded: string;
+	user_id: string;
 };
 
 export type RequestPayload = Solution | null;
