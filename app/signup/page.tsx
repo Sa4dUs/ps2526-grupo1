@@ -47,6 +47,7 @@ export default function SignUpPage() {
 				email: user?.email ?? "",
 				createdAt: serverTimestamp(),
 				times: [],
+				best_score: 0,
 			});
 
 			router.push("/");
