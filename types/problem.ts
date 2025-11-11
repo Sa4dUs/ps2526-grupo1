@@ -29,4 +29,5 @@ export type Problem = {
 	question: string;
 	answers: number[];
 	correctAnswer: number;
+	score?: number;
 };
