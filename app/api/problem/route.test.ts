@@ -30,6 +30,7 @@ describe("POST /api/problems", () => {
 			question: "Q0",
 			answers: [1, 2, 3],
 			correctAnswer: 42,
+			score: 0,
 		};
 		const encoded = encrypt(JSON.stringify(firstProblem));
 
@@ -52,6 +53,7 @@ describe("POST /api/problems", () => {
 			question: "Q0",
 			answers: [1, 2, 3],
 			correctAnswer: 42,
+			score: 0,
 		};
 		const encoded = encrypt(JSON.stringify(firstProblem));
 
