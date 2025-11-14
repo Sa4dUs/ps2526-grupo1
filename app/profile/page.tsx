@@ -1,5 +1,5 @@
 "use client";
-import { useContext,  useEffect,  useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthUserContext } from "@/app/context/AuthUserProvider";
 import { Button } from "@/components/ui/button";
@@ -7,10 +7,14 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getAuth } from "firebase/auth";
 
+interface Achievement {
+	name: string;
+	image_url: string;
+}
+
 export default function UserProfilePage() {
 	const router = useRouter();
 	const { user, signOut } = useContext(AuthUserContext);
-	interface Achievement{name:string; image_url: string;}
 	const [achievements, setAchievements] = useState<Achievement[]>([]);
 	const [errorMessage, setErrorMessage] = useState("");
 
@@ -19,36 +23,36 @@ export default function UserProfilePage() {
 		router.push("/login");
 	};
 
-	useEffect(()=> {
+	useEffect(() => {
 		(async () => {
 			try {
 				const headers: Record<string, string> = {
-					"Accept": "application/json" 
+					Accept: "application/json",
 				};
-				const res = await fetch(`/api/achievements?user_id=${getAuth().currentUser?.uid}`, {
-					method: "GET", 
-					headers 
-				});
+				const res = await fetch(
+					`/api/achievements?user_id=${getAuth().currentUser?.uid}`,
+					{
+						method: "GET",
+						headers,
+					}
+				);
 
-				if (!res.ok) 
-					throw new Error(`HTTP ${res.status}`);
+				if (!res.ok) throw new Error(`HTTP ${res.status}`);
 				const data = await res.json();
-				console.log(data)
 				setAchievements(data.achievements);
 			} catch (err: unknown) {
 				console.error("Error fetching achievements:", err);
 				setErrorMessage("Failed to fetch achievements");
 			}
-		})()
+		})();
 	}, []);
-
 
 	const getAvatar = (email?: string) =>
 		`https://api.dicebear.com/9.x/lorelei/svg?seed=${encodeURIComponent(
 			email ?? ""
 		)}`;
 
-	if (!user) return null; 
+	if (!user) return null;
 
 	return (
 		<Card className="w-full max-w-md shadow-lg">
