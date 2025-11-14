@@ -5,11 +5,12 @@ import { AuthUserContext } from "@/app/context/AuthUserProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getAuth } from "firebase/auth";
 
 export default function UserProfilePage() {
 	const router = useRouter();
 	const { user, signOut } = useContext(AuthUserContext);
-	interface Achievement{title:string;}
+	interface Achievement{name:string; image_url: string;}
 	const [achievements, setAchievements] = useState<Achievement[]>([]);
 	const [errorMessage, setErrorMessage] = useState("");
 
@@ -19,32 +20,27 @@ export default function UserProfilePage() {
 	};
 
 	useEffect(()=> {
- 		// const fetchAchievements = async () => {
-		// try {
-		//     	const headers: Record<string, string> = {
-		// 			"Accept": "application/json" 
-		// 		};
-		//        	const res = await fetch("/api/achievements", {
-		// 			method: "GET", 
-		// 			headers 
-		// 		});
+		(async () => {
+			try {
+				const headers: Record<string, string> = {
+					"Accept": "application/json" 
+				};
+				const res = await fetch(`/api/achievements?user_id=${getAuth().currentUser?.uid}`, {
+					method: "GET", 
+					headers 
+				});
 
-		//         if (!res.ok) 
-		// 			throw new Error(`HTTP ${res.status}`);
-		//        	const data = await res.json();
-		//       	setAchievements(data);
-		//    	} catch (err: any) {
-		//     	console.error("Error fetching achievements:", err);
-		// 		setErrorMessage(err.message || "Failed to fetch achievements");
-		//    	}
-		//  };
-		//  fetchAchievements();
-			setAchievements([
-			{ title: "Primer inicio de sesión" },
-			{ title: "Explorador del perfil" },
-			{ title: "Desbloqueado: Probando Achievements" },
-			]);
-		}, []);
+				if (!res.ok) 
+					throw new Error(`HTTP ${res.status}`);
+				const data = await res.json();
+				console.log(data)
+				setAchievements(data.achievements);
+			} catch (err: unknown) {
+				console.error("Error fetching achievements:", err);
+				setErrorMessage("Failed to fetch achievements");
+			}
+		})()
+	}, []);
 
 
 	const getAvatar = (email?: string) =>
@@ -85,10 +81,21 @@ export default function UserProfilePage() {
 					)}
 
 					{achievements.length > 0 && (
-						<ul className="mt-3 text-left">
+						<ul className="mt-3 w-full space-y-2">
 							{achievements.map((a, i) => (
-								<li key={i} className="border-b py-1">
-									{a.title || JSON.stringify(a)}
+								<li
+									key={i}
+									className="p-3 rounded-lg border shadow-sm bg-card text-card-foreground flex items-center gap-3"
+								>
+									<img
+										src={a.image_url}
+										alt={a.name}
+										className="w-10 h-10 rounded-md object-cover border"
+									/>
+
+									<span className="font-medium">
+										{a.name}
+									</span>
 								</li>
 							))}
 						</ul>
