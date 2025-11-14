@@ -46,8 +46,12 @@ export default function SignUpPage() {
 				name: username,
 				email: user?.email ?? "",
 				createdAt: serverTimestamp(),
-				times: [],
-				best_score: 0,
+				achievements: [],
+				stats: {
+					best_score: 0,
+					total_games: 0,
+					times: [],
+				}
 			});
 
 			router.push("/");
