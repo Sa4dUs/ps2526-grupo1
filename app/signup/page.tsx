@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/app/context/AuthUserProvider";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/lib/firebaseClient";
+import { auth, db } from "@/lib/firebaseClient";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 
 export default function SignUpPage() {
 	const [username, setUsername] = useState("");
@@ -35,9 +36,18 @@ export default function SignUpPage() {
 				email,
 				password
 			);
+			const user = userCredential.user;
 
 			await updateProfile(userCredential.user, {
 				displayName: username,
+			});
+
+			await setDoc(doc(db, "users", user?.uid ?? ""), {
+				name: username,
+				email: user?.email ?? "",
+				createdAt: serverTimestamp(),
+				times: [],
+				best_score: 0,
 			});
 
 			router.push("/");

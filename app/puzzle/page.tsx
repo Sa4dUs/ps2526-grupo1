@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useProblemGame } from "../hooks/useProblemGame";
 import { AnswerButtons } from "../components/AnswerButtons";
+import { getAuth } from "firebase/auth";
 
 enum GameState {
 	Loading,
@@ -60,6 +61,7 @@ export default function PuzzlePage() {
 		const response = await requestProblem({
 			solution: answer,
 			encoded: problem.encoded,
+			user_id: getAuth().currentUser?.uid || "",
 		});
 
 		if ("error" in response) {
@@ -70,9 +72,8 @@ export default function PuzzlePage() {
 		setScore((prev) => prev + 1);
 		setIsCorrect(true);
 
-		setTimeout(async () => {
-			const next = await requestProblem();
-			setProblem(next as ResponseSuccess);
+		setTimeout(() => {
+			setProblem(response as ResponseSuccess);
 			setSelected(null);
 			setIsCorrect(null);
 		}, 500);
