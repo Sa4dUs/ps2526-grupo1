@@ -13,14 +13,17 @@ export async function get_leaderboard(
 ): Promise<LeaderboardEntry[]> {
     const snapshot = await db
         .collection("users")
-        .orderBy("best_score", "desc")
+        .orderBy("stats.best_score", "desc")
         .get();
 
-    const allUsers: LeaderboardEntry[] = snapshot.docs.map((doc, index) => ({
-        name: doc.get("name") ?? "Unnamed",
-        best_score: doc.get("best_score") ?? 0,
-        rank: index + 1,
-    }));
+    const allUsers: LeaderboardEntry[] = snapshot.docs.map((doc, index) => {
+        const data = doc.data();
+        return {
+            name: data.name ?? "Unnamed",
+            best_score: data.stats?.best_score ?? 0,
+            rank: index + 1,
+        };
+    });
 
     const fromIndex = Math.max(0, from - 1)
 

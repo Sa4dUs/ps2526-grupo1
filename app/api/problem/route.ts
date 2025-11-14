@@ -8,6 +8,7 @@ import {
 } from "@/types/problem";
 import { db } from "@/lib/firebaseClient";
 import { doc, runTransaction } from "firebase/firestore";
+import { ACHIEVEMENTS } from "@/data/achievements";
 
 const createProblem = (index: number, difficulty: number): Problem =>
 	({ index, ...generateProblems(difficulty) } as Problem);
@@ -33,7 +34,6 @@ export async function POST(req: Request) {
 			score = decoded.score ?? 0;
 
 			if (solution !== decoded.correctAnswer) {
-				console.log(score)
 				const ref = doc(db, "users", user_id);
 
 				await runTransaction(db, async (transaction) => {
@@ -41,9 +41,24 @@ export async function POST(req: Request) {
 					if (!snapshot.exists()) throw new Error("document does not exist");
 
 					const data = snapshot.data();
-					const new_value = Math.max(data.best_score || 0, score);
+					const current_best = data.stats?.best_score ?? 0;
+					const new_value = Math.max(current_best, score);
 
-					transaction.update(ref, { best_score: new_value });
+					const current_games = data.stats?.total_games ?? 0;
+					const stats = {
+						...data.stats,
+						best_score: new_value,
+						total_games: current_games + 1,
+					};
+
+					const achievements = ACHIEVEMENTS.filter(a => a.validator(stats)).map(a => {
+						return { name: a.name, image_url: a.image_url }
+					});
+
+					transaction.update(ref, {
+						"stats": stats,
+						"achievements": achievements,
+					});
 				});
 
 				return jsonResponse({
