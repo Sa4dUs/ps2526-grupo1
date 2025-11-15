@@ -19,6 +19,11 @@ export default function Home() {
 						Train
 					</Button>
 				</Link>
+				<Link href="/timetrial">
+					<Button className="w-32">
+						Time trial
+					</Button>
+				</Link>
 			</CardContent>
 		</Card>
 	);
