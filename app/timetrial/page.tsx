@@ -42,7 +42,7 @@ export default function TimeTrialPage() {
         requestProblem().then((res) => res as ResponseSuccess)
     );
 
-    const { timeLeft, startTimer } = useTimer(30, () => {
+    const { timeLeft, startTimer } = useTimer(10, () => {
         toast("Time's up!", {
             duration: 1500,
             icon: <Clock size={30} color="white" />,
@@ -56,7 +56,7 @@ export default function TimeTrialPage() {
             },
         });
         cancelGame();
-        fetch("/api/problem/end", {
+        fetch("/api/problem/timetrial", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ score, timeLeft }),
