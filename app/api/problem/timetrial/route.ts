@@ -2,6 +2,7 @@ import { generateProblems } from "@/lib/problems";
 import { encrypt, decrypt } from "@/lib/crypto";
 import { Problem, ProblemError, ResponsePayload } from "@/types/problem";
 
+const timeLimit=30;
 const createProblem = (index: number, difficulty: number): Problem => {
   const p = generateProblems(difficulty);
 
@@ -26,7 +27,7 @@ const jsonResponse = (data: ResponsePayload | object, status = 200) =>
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { encoded, solution } = body;
+    let { encoded } = body;
 
     if (!encoded) {
       const startTime = Date.now();
@@ -35,6 +36,9 @@ export async function POST(req: Request) {
       const payload = encrypt(
         JSON.stringify({
           index: 0,
+          solution: problem.correctAnswer,
+          question: problem.question,
+          answers: problem.answers,
           startTime,
         })
       );
@@ -49,18 +53,20 @@ export async function POST(req: Request) {
     }
 
     const decoded = JSON.parse(decrypt(encoded)) as {
-      index: number;
-      startTime: number;
+        index: number;
+        question: string;
+        solution: number;
+        startTime:number;
     };
-    const { index, startTime } = decoded;
+    let { index, startTime } = decoded;
 
     const elapsed = (Date.now() - startTime) / 1000;
-    if (elapsed > 30) {
+    if (elapsed > timeLimit) {
       return jsonResponse({ ok: true, finished: true });
     }
 
     const problem = createProblem(index, index);
-    if (solution != null && solution !== problem.correctAnswer) {
+    if (decoded.solution != null && decoded.solution !== problem.correctAnswer) {
       return jsonResponse({ error: ProblemError.IncorrectSubmission });
     }
 
