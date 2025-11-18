@@ -31,3 +31,9 @@ export type Problem = {
 	correctAnswer: number;
 	score?: number;
 };
+
+export type ProblemStatement = {
+	question: string;
+	answers: number[];
+	correctAnswer: number;
+}
