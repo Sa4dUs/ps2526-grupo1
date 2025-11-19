@@ -1,26 +1,16 @@
 import { generateProblems } from "@/lib/problems";
 import { encrypt, decrypt } from "@/lib/crypto";
-import { Problem, ProblemError, ResponsePayload } from "@/types/problem";
+import { ProblemError, ResponsePayload } from "@/types/problem";
+import { db } from "@/lib/firebaseClient";
+import { doc, runTransaction } from "firebase/firestore";
+import { ACHIEVEMENTS } from "@/data/achievements";
 
-const timeLimit=30;
-const createProblem = (index: number, difficulty: number): Problem => {
-  const p = generateProblems(difficulty);
-
-  if (p.correctAnswer == null) {
-    throw new Error("generateProblems returned undefined correctAnswer");
-  }
-
-  return {
-    index,
-    question: p.question,
-    answers: p.answers,
-    correctAnswer: p.correctAnswer,
-  };
-};
+const timeLimit = 30;
 
 interface UserBody {
   answer: number,
   encoded: string,
+  user_id: string,
 }
 
 interface EncodedBody {
@@ -41,40 +31,19 @@ export async function POST(req: Request) {
     const body = await req.body as Partial<UserBody>;
 
     if (!body.encoded) {
-      const startTime = Date.now();
-      const problem = createProblem(0, 0);
-
-      const payload = encrypt(
-        JSON.stringify({
-          index: 0,
-          solution: problem.correctAnswer,
-          score: 0,
-          startTime,
-        })
-      );
-
-      return jsonResponse({
-        index: problem.index,
-        question: problem.question,
-        answers: problem.answers,
-        encoded: payload,
-      });
+      return generateFirstProblem()
     }
 
     const decoded = JSON.parse(decrypt(body.encoded)) as EncodedBody;
-
     const is_correct = body.answer && decoded.solution == body.answer
-
 
     const elapsed = (Date.now() - decoded.startTime) / 1000;
     if (elapsed > timeLimit) {
       return jsonResponse({ ok: true, finished: true, points: decoded.score, index: decoded.index });
     }
 
-    const problem = createProblem(decoded.index, decoded.index);
-
     const nextIndex = decoded.index + 1;
-    const nextProblem = createProblem(nextIndex, nextIndex);
+    const nextProblem = generateProblems(nextIndex);
     const nextScore = is_correct ? decoded.score + 1 : decoded.score
 
     const nextEncoded = encrypt(
@@ -88,7 +57,7 @@ export async function POST(req: Request) {
 
     return jsonResponse({
       ok: is_correct,
-      index: nextProblem.index,
+      index: is_correct ? decoded.index + 1 : decoded.index,
       question: nextProblem.question,
       answers: nextProblem.answers,
       encoded: nextEncoded,
@@ -100,3 +69,53 @@ export async function POST(req: Request) {
   }
 }
 
+
+function generateFirstProblem() {
+  const startTime = Date.now();
+  const problem = generateProblems(0);
+
+  const payload = encrypt(
+    JSON.stringify({
+      index: 0,
+      solution: problem.correctAnswer,
+      score: 0,
+      startTime,
+    })
+  );
+
+  return jsonResponse({
+    index: 0,
+    question: problem.question,
+    answers: problem.answers,
+    encoded: payload,
+  });
+}
+
+async function updateScore(user_id: string, score: number) {
+  const ref = doc(db, "users", user_id);
+
+  await runTransaction(db, async (transaction) => {
+    const snapshot = await transaction.get(ref);
+    if (!snapshot.exists()) throw new Error("document does not exist");
+
+    const data = snapshot.data();
+    const current_best = data.stats?.best_score ?? 0;
+    const new_value = Math.max(current_best, score);
+
+    const current_games = data.stats?.total_games ?? 0;
+    const stats = {
+      ...data.stats,
+      best_score: new_value,
+      total_games: current_games + 1,
+    };
+
+    const achievements = ACHIEVEMENTS.filter(a => a.validator(stats)).map(a => {
+      return { name: a.name, image_url: a.image_url }
+    });
+
+    transaction.update(ref, {
+      "stats": stats,
+      "achievements": achievements,
+    });
+  });
+}
