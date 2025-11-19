@@ -18,6 +18,18 @@ const createProblem = (index: number, difficulty: number): Problem => {
   };
 };
 
+interface UserBody {
+  answer: number,
+  encoded: string,
+}
+
+interface EncodedBody {
+  index: number;
+  solution: number;
+  score: number,
+  startTime: number;
+}
+
 const jsonResponse = (data: ResponsePayload | object, status = 200) =>
   new Response(JSON.stringify(data), {
     status,
@@ -26,10 +38,9 @@ const jsonResponse = (data: ResponsePayload | object, status = 200) =>
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
-    let { encoded } = body;
+    const body = await req.body as Partial<UserBody>;
 
-    if (!encoded) {
+    if (!body.encoded) {
       const startTime = Date.now();
       const problem = createProblem(0, 0);
 
@@ -37,14 +48,12 @@ export async function POST(req: Request) {
         JSON.stringify({
           index: 0,
           solution: problem.correctAnswer,
-          question: problem.question,
-          answers: problem.answers,
+          score: 0,
           startTime,
         })
       );
 
       return jsonResponse({
-        ok: true,
         index: problem.index,
         question: problem.question,
         answers: problem.answers,
@@ -52,36 +61,33 @@ export async function POST(req: Request) {
       });
     }
 
-    const decoded = JSON.parse(decrypt(encoded)) as {
-        index: number;
-        question: string;
-        solution: number;
-        startTime:number;
-    };
-    let { index, startTime } = decoded;
+    const decoded = JSON.parse(decrypt(body.encoded)) as EncodedBody;
 
-    const elapsed = (Date.now() - startTime) / 1000;
+    const is_correct = body.answer && decoded.solution == body.answer
+
+
+    const elapsed = (Date.now() - decoded.startTime) / 1000;
     if (elapsed > timeLimit) {
-      return jsonResponse({ ok: true, finished: true });
+      return jsonResponse({ ok: true, finished: true, points: decoded.score, index: decoded.index });
     }
 
-    const problem = createProblem(index, index);
-    if (decoded.solution != null && decoded.solution !== problem.correctAnswer) {
-      return jsonResponse({ error: ProblemError.IncorrectSubmission });
-    }
+    const problem = createProblem(decoded.index, decoded.index);
 
-    const nextIndex = index + 1;
+    const nextIndex = decoded.index + 1;
     const nextProblem = createProblem(nextIndex, nextIndex);
+    const nextScore = is_correct ? decoded.score + 1 : decoded.score
 
     const nextEncoded = encrypt(
       JSON.stringify({
         index: nextIndex,
-        startTime,
+        startTime: decoded.startTime,
+        score: nextScore,
+        solution: nextProblem.correctAnswer
       })
     );
 
     return jsonResponse({
-      ok: true,
+      ok: is_correct,
       index: nextProblem.index,
       question: nextProblem.question,
       answers: nextProblem.answers,
@@ -93,3 +99,4 @@ export async function POST(req: Request) {
     return jsonResponse({ error: ProblemError.UnexpectedError }, 500);
   }
 }
+
