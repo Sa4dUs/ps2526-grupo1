@@ -10,6 +10,7 @@ import { AnswerButtons } from "../components/AnswerButtons";
 import { useTimer } from "@/lib/timetrial"; // tu hook adaptado
 import toast from "react-hot-toast";
 import { Clock } from "lucide-react";
+import { getAuth } from "firebase/auth";
 
 enum GameState {
     StartScreen,
@@ -17,7 +18,7 @@ enum GameState {
     Playing,
 }
 
-async function requestProblem(solution?: Solution & { timeLeft?: number }): Promise<ResponsePayload> { //to add timeLeft to solution
+async function requestProblem(solution?: Solution): Promise<ResponsePayload> { //to add timeLeft to solution
     const res = await fetch("/api/problem", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -76,7 +77,7 @@ export default function TimeTrialPage() {
 
     const cancelGame = () => {
         setScore(0);
-        setProblem(null as any);
+        setProblem(null);
         setSelected(null);
         setIsCorrect(null);
         setGameState(GameState.StartScreen);
@@ -90,7 +91,7 @@ export default function TimeTrialPage() {
         const response = await requestProblem({
             solution: answer,
             encoded: problem.encoded,
-            timeLeft, //i am sending the timeleft to de backend
+            user_id: getAuth().currentUser?.uid ?? ""
         });
 
         if (!("error" in response)) {
