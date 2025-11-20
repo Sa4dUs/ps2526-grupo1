@@ -21,6 +21,10 @@ export default function UserMenu() {
 		router.push("/profile");
 	};
 
+	const goToRanking = () => {
+		router.push("/ranking");
+	};
+
 	return (
 		<div className="fixed top-6 right-6 flex items-center gap-4 z-50">
 			<img
@@ -35,6 +39,10 @@ export default function UserMenu() {
 			<Button variant="outline" size="sm" onClick={handleLogout}>
 				Logout
 			</Button>
+			<Button variant="outline" size="sm" onClick={goToRanking}>
+				Ranking
+			</Button>
+			
 		</div>
 	);
 }

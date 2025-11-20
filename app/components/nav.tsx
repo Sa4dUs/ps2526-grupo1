@@ -30,6 +30,9 @@ export default function Navbar() {
 						<Link href="/signup">
 							<Button variant="outline">Signup</Button>
 						</Link>
+						<Link href="/ranking">
+							<Button variant="default">Ranking</Button>
+						</Link>
 					</>
 				)}
 			</nav>
