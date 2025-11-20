@@ -11,7 +11,7 @@ export function generateProblems(level: number): ProblemStatement {
 	const question = expr + " = ?";
 	const correctAnswer = Math.round(eval(expr) * 100) / 100;
 
-	const threshold = Math.min(5, correctAnswer / 2);
+	const threshold = Math.max(5, correctAnswer / 2);
 	const answers = generateAnswers(correctAnswer, threshold);
 
 	return {
