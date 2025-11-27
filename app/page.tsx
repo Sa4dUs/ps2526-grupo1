@@ -10,7 +10,7 @@ export default function Home() {
 			<CardHeader>
 				<h2 className="text-xl font-medium">Game Modes</h2>
 			</CardHeader>
-			<CardContent className="flex justify-around">
+			<CardContent className="flex flex-wrap justify-center gap-4 p-6">
 				<Link href="/puzzle">
 					<Button className="w-32">Puzzle Rush</Button>
 				</Link>
@@ -20,8 +20,13 @@ export default function Home() {
 					</Button>
 				</Link>
 				<Link href="/timetrial">
-					<Button className="w-32">
+					<Button variant="secondary" className="w-32">
 						Time trial
+					</Button>
+				</Link>
+				<Link href="/operator">
+					<Button className="w-32">
+						Operator challenge
 					</Button>
 				</Link>
 			</CardContent>
