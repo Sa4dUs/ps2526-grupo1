@@ -43,7 +43,7 @@ export default function TimeTrialPage() {
         requestProblem().then((res) => res as ResponseSuccess)
     );
 
-    const { timeLeft, startTimer } = useTimer(10, () => {
+    const { timeLeft, startTimer } = useTimer(30, () => {
         toast("Time's up!", {
             duration: 1500,
             icon: <Clock size={30} color="white" />,
