@@ -5,7 +5,7 @@ const MAX_PER_LEVEL = [10, 20, 50, 100];
 
 //function to generate random problems based on the level that the user has selected from 0 to 3
 export function generateProblems(level: number): ProblemStatement {
-	const depth = level + 2;
+	const depth = level + 1;
 	const expr = Expr(MAX_PER_LEVEL[level], depth);
 
 	const question = expr + " = ?";
@@ -27,7 +27,7 @@ function generateAnswers(correctAnswer: number, threshold: number): number[] {
 	while (answers.size < 4) {
 		const offset = Math.floor(randomRange(threshold, -threshold));
 		if (offset !== 0) {
-			const wrongAnswer = correctAnswer + offset;
+			const wrongAnswer = Math.round((correctAnswer + offset) * 100) / 100;
 			answers.add(wrongAnswer);
 		}
 	}

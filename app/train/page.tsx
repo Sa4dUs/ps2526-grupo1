@@ -5,6 +5,8 @@ import { generateProblems } from "@/lib/problems";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Info } from "lucide-react";
 
 type Problem = {
 	question: string;
@@ -66,6 +68,36 @@ export default function TrainingPage() {
 							</Button>
 						))}
 					</div>
+					<Dialog>
+						<div className="flex items-center justify-center gap-2 mb-6 text-sm text-muted-foreground">
+							<span>
+								Note: Levels 2 and 3 may generate combined operations.
+								Click the info icon for more details.
+							</span>
+
+							{/*Botón para abrir el modal*/}
+							<DialogTrigger asChild>
+								<Button variant="outline" size="icon" className="h-5 w-5 rounded-full">
+									<Info className="h-4 w-4" />
+								</Button>
+							</DialogTrigger>
+						</div>
+						<DialogContent className="max-w-xs sm:max-w-md">
+							<DialogHeader>
+								<DialogTitle>Hierarchy of Operations</DialogTitle>
+								<DialogDescription>
+									This is the order (PEMDAS/BODMAS) used for combined operations.
+								</DialogDescription>
+							</DialogHeader>
+							<div className="mt-4">
+								<img
+									src="/hierarchyoperations.png"
+									alt="Jerarquía de operaciones (PEMDAS)"
+									className="rounded-md object-contain w-full"
+								/>
+							</div>
+						</DialogContent>
+					</Dialog>
 
 					<Link href="/" className="text-center">
 						<Button variant="outline">Back home</Button>
