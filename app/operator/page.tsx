@@ -82,7 +82,7 @@ function DroppableBox({ id, children, }: { id: string; children: React.ReactNode
 }
 
 export default function Operatorpage() {
-    const [score, setScore] = useState(0);
+    const [numberOfQuestions, setNumberOfQuestions] = useState(0);
     const [gameState, setGameState] = useState(GameState.StartScreen);
     const [availableTokens, setAvailableTokens] = useState<Token[]>([]); //Tokens en el área de origen
     const [equationSlots, setEquationSlots] = useState<(Token | null)[]>([]); //Tokens en las cajas de destino
@@ -122,7 +122,7 @@ export default function Operatorpage() {
     }, [problem]); //Se ejecuta cada vez que 'problem' cambia
 
     const startGame = async () => {
-        setScore(0);
+        setNumberOfQuestions(1);
         setGameState(GameState.Loading);
         setSelected(null);
         setIsCorrect(null);
@@ -132,7 +132,7 @@ export default function Operatorpage() {
     };
 
     const cancelGame = () => {
-        setScore(0);
+        setNumberOfQuestions(1);
         setProblem(null); 
         setSelected(null);
         setIsCorrect(null);
@@ -165,7 +165,7 @@ export default function Operatorpage() {
         }
         if (correctAnswer === problem.solution) {
             setIsCorrect(true);
-            setScore((prev) => prev + 1);
+            setNumberOfQuestions((prev) => prev + 1);
             requestProblem({
                 solution: problem.solution,
                 encoded: problem.encoded,
@@ -278,7 +278,7 @@ export default function Operatorpage() {
                 {gameState === GameState.Playing && problem && (
                     <Card className="w-full max-w-3xl shadow-lg">
                         <CardHeader className="flex flex-col items-center gap-2">
-                            <h2 className="text-center">Score: {score}</h2>
+                            <h2 className="text-center">Question number: {numberOfQuestions}</h2>
                         </CardHeader>
                         <CardContent className="flex flex-col items-center gap-6">
 
@@ -306,6 +306,11 @@ export default function Operatorpage() {
                                     </DraggableBox>
                                 ))}
                             </div>
+                            <div className="flex items-center justify-center gap-2 mb-2 text-sm text-muted-foreground">
+							    <span>
+								    Note: Drag and drop the tokens to form the correct equation.
+							    </span>
+						    </div>
 
                             {isCorrect === true && (
                                 <p className="text-green-600 font-semibold">¡Correcto!</p>
