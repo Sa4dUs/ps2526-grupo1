@@ -1,20 +1,21 @@
 import { Button } from "@/components/ui/button";
+import { ReactNode } from "react";
 
-type AnswersProps = {
-	answers: number[];
-	selected: number | null;
+type AnswersProps <T>= {
+	answers: T[];
+	selected: T | null;
 	isCorrect: boolean | null;
-	correctAnswer?: number;
-	onSelect: (answer: number) => void;
+	correctAnswer?: T;
+	onSelect: (answer: T) => void;
 };
 
-export function AnswerButtons({
+export function AnswerButtons<T>({
 	answers,
 	selected,
 	isCorrect,
 	correctAnswer,
 	onSelect,
-}: AnswersProps) {
+}: AnswersProps<T>) {
 	return (
 		<div className="grid grid-cols-1 gap-3 w-full max-w-md mx-auto">
 			{answers.map((ans, i) => {
@@ -37,7 +38,7 @@ export function AnswerButtons({
 						onClick={() => onSelect(ans)}
 						disabled={selected !== null}
 					>
-						{ans}
+						{ans as ReactNode}
 					</Button>
 				);
 			})}
