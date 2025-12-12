@@ -50,7 +50,7 @@ export default function TimeTrialPage() {
         return res as ResponseSuccess;
     });
 
-    const { timeLeft, startTimer } = useTimer(20, () => {
+    const { timeLeft, startTimer } = useTimer(30, () => {
         toast("Time's up!", {
             duration: 1500,
             icon: <Clock size={30} color="white" />,
