@@ -6,9 +6,12 @@ export async function GET(req: Request) {
     const from = Number(searchParams.get("from") ?? 0);
     const to = Number(searchParams.get("to") ?? 100);
     const user = searchParams.get("user") || undefined;
+    
+    const modeParam = searchParams.get("mode");
+    const mode = (modeParam === "timetrial") ? "timetrial" : "puzzle";
 
     try {
-        const leaderboard = await get_leaderboard(from, to, user);
+        const leaderboard = await get_leaderboard(from, to, user, mode);
         return NextResponse.json(leaderboard);
     } catch (err) {
         console.error(err);

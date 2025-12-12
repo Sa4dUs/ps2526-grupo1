@@ -18,13 +18,18 @@ enum GameState {
     Playing,
 }
 
-async function requestProblem(solution?: Solution): Promise<ResponsePayload> { //to add timeLeft to solution
-    const res = await fetch("/api/problem", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: solution ? JSON.stringify(solution) : "null",
-    });
-    return await res.json();
+async function requestProblem(solution?: Solution): Promise<ResponsePayload> {
+    try {
+        const res = await fetch("/api/problem", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: solution ? JSON.stringify(solution) : "null",
+        });
+        return await res.json();
+    } catch (e) {
+        console.error(e);
+        return { error: "UnexpectedError" } as any;
+    }
 }
 
 export default function TimeTrialPage() {
@@ -39,11 +44,13 @@ export default function TimeTrialPage() {
         selectAnswer,
         setSelected,
         setIsCorrect,
-    } = useProblemGame<ResponseSuccess>(async () =>
-        requestProblem().then((res) => res as ResponseSuccess)
-    );
+    } = useProblemGame<ResponseSuccess>(async () => {
+        const res = await requestProblem();
+        if ("error" in res) throw new Error("Failed to load problem");
+        return res as ResponseSuccess;
+    });
 
-    const { timeLeft, startTimer } = useTimer(10, () => {
+    const { timeLeft, startTimer } = useTimer(20, () => {
         toast("Time's up!", {
             duration: 1500,
             icon: <Clock size={30} color="white" />,
@@ -57,11 +64,22 @@ export default function TimeTrialPage() {
             },
         });
         cancelGame();
-        fetch("/api/problem/timetrial", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ score, timeLeft }),
-        }).catch(console.error); //to catch posib errors
+
+        const auth = getAuth();
+        const user = auth.currentUser;
+
+        if (user) {
+            fetch("/api/problem/timetrial", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    score, 
+                    timeLeft, 
+                    finished: true,
+                    user_id: user.uid 
+                }),
+            }).catch(console.error); //to catch posib errors
+        }
     });
 
     const startGame = async () => {
@@ -69,7 +87,14 @@ export default function TimeTrialPage() {
         setGameState(GameState.Loading);
         setSelected(null);
         setIsCorrect(null);
+        
         const res = await requestProblem();
+        if ("error" in res) {
+            toast.error("Error starting game. Try again.");
+            setGameState(GameState.StartScreen);
+            return;
+        }
+        
         setProblem(res as ResponseSuccess);
         setGameState(GameState.Playing);
         startTimer();
@@ -88,27 +113,34 @@ export default function TimeTrialPage() {
 
         selectAnswer(answer);
 
+        const auth = getAuth();
         const response = await requestProblem({
             solution: answer,
             encoded: problem.encoded,
-            user_id: getAuth().currentUser?.uid ?? ""
+            user_id: auth.currentUser?.uid ?? ""
         });
 
         if (!("error" in response)) {
             setScore((prev) => prev + 1);
             setIsCorrect(true);
         }
-
         //charge new problem
+
         setTimeout(async () => {
             const next = await requestProblem();
+            
+            if ("error" in next) {
+                console.error("Error fetching next problem:", next.error);
+                return; 
+            }
+            
             setProblem(next as ResponseSuccess);
             setSelected(null);
             setIsCorrect(null);
         }, 500);
     };
-
     //initial screen before starting the game
+
     if (gameState === GameState.StartScreen) {
         return (
             <div className="flex flex-col items-center justify-center w-full flex-grow gap-6">
@@ -131,7 +163,6 @@ export default function TimeTrialPage() {
         );
     }
 
-    //game screen
     return (
         <div className="flex flex-col items-center justify-center w-full flex-grow gap-6">
             {gameState === GameState.Loading && <p>Loading...</p>}
@@ -149,6 +180,7 @@ export default function TimeTrialPage() {
                             {problem.question}
                         </h2>
 
+                        {/* El componente AnswerButtons ahora es seguro de usar */}
                         <AnswerButtons
                             answers={problem.answers}
                             selected={selected}
