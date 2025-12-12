@@ -9,18 +9,29 @@ interface LeaderboardEntry {
 export async function get_leaderboard(
     from: number,
     to: number,
-    user?: string
+    user?: string,
+    mode: "puzzle" | "timetrial" = "puzzle" 
 ): Promise<LeaderboardEntry[]> {
+    
+    // Seleccionamos el campo de la base de datos según el modo
+    const orderByField = mode === "timetrial" ? "stats.best_score_timetrial" : "stats.best_score";
+
     const snapshot = await db
         .collection("users")
-        .orderBy("stats.best_score", "desc")
+        .orderBy(orderByField, "desc")
         .get();
 
     const allUsers: LeaderboardEntry[] = snapshot.docs.map((doc, index) => {
         const data = doc.data();
+        
+        // Obtenemos el puntaje correcto según el modo
+        const score = mode === "timetrial" 
+            ? (data.stats?.best_score_timetrial ?? 0) 
+            : (data.stats?.best_score ?? 0);
+
         return {
             name: data.name ?? "Unnamed",
-            best_score: data.stats?.best_score ?? 0,
+            best_score: score,
             rank: index + 1,
         };
     });
