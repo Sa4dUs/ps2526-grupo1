@@ -19,18 +19,14 @@ enum GameState {
 }
 
 async function requestProblem(solution?: Solution): Promise<ResponsePayload> {
-    try {
         const res = await fetch("/api/problem", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: solution ? JSON.stringify(solution) : "null",
         });
         return await res.json();
-    } catch (e) {
-        console.error(e);
-        return { error: "UnexpectedError" } as any;
-    }
-}
+    } 
+
 
 export default function TimeTrialPage() {
     const [score, setScore] = useState(0);
