@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Calculator, Timer, Flame, Plus, Minus } from "lucide-react";
+import { Calculator, Timer, Flame, Plus, Code } from "lucide-react";
 
 export default function Home() {
 	return (
@@ -84,6 +84,23 @@ export default function Home() {
 					</div>
 				</Card>
 
+				{/* HIGHER-LOWER */}
+				<Card className="w-full border rounded-3xl p-4 shadow-sm">
+					<div className="flex items-center gap-6">
+						<div className="p-4 bg-gray-100 rounded-2xl">
+							<Code className="w-16 h-16 text-gray-700" />
+						</div>
+						<div className="flex flex-col flex-grow">
+							<h3 className="text-2xl font-medium tracking-wide">Higher Lower</h3>
+							<p className="text-muted-foreground text-sm mb-3">
+								Test your skills by comparing the results of two operations.
+							</p>
+							<Link href="/higherlower">
+								<Button>Start</Button>
+							</Link>
+						</div>
+					</div>
+				</Card>
 			</div>
 		</div>
 	);
