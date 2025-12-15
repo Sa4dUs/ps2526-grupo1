@@ -131,8 +131,7 @@
   body {
 @apply bg-background text-foreground font-sans;
     
-    /* 3. AÑADIR ESTAS PROPIEDADES DIRECTAMENTE AQUÍ: */
-    background-image: url('/background.jpg'); /* OJO: La ruta NO debe incluir /public/ si está en Next.js public folder */
+    background-image: url('/background.jpg'); 
     background-size: cover;          
     background-repeat: no-repeat;    
     background-attachment: fixed;  }
