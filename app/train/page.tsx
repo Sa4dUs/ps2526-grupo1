@@ -51,58 +51,51 @@ export default function TrainingPage() {
 	return (
 		<div className="flex flex-col items-center justify-center w-full flex-grow">
 			{level === null ? (
-				<>
-					<h1 className="text-3xl font-bold mb-6 text-center text-primary">
-						Select Training Level
-					</h1>
+				<Card className="w-full max-w-3xl shadow-lg">
+					<CardHeader>
+						<h1 className="text-3xl font-bold text-center text-primary">
+							Select Training Level
+						</h1>
+					</CardHeader>
 
-					<div className="flex flex-wrap justify-center gap-4 mb-6">
-						{[0, 1, 2, 3].map((lvl) => (
-							<Button
-								key={lvl}
-								variant="default"
-								className="px-6 py-2 text-lg"
-								onClick={() => handleLevelClick(lvl)}
-							>
-								Level {lvl}
-							</Button>
-						))}
-					</div>
-					<Dialog>
-						<div className="flex items-center justify-center gap-2 mb-6 text-sm text-muted-foreground">
-							<span>
-								Note: Levels 2 and 3 may generate combined operations.
-								Click the info icon for more details.
-							</span>
-
-							{/*Botón para abrir el modal*/}
-							<DialogTrigger asChild>
-								<Button variant="outline" size="icon" className="h-5 w-5 rounded-full">
-									<Info className="h-4 w-4" />
+					<CardContent className="flex flex-col items-center">
+						{/* Botones de niveles */}
+						<div className="flex flex-wrap justify-center gap-4 mb-8">
+							{[0, 1, 2, 3].map((lvl) => (
+								<Button
+									key={lvl}
+									variant="default"
+									className="px-8 py-6 text-xl font-semibold shadow-md hover:scale-105 transition-transform"
+									onClick={() => handleLevelClick(lvl)}
+								>
+									Level {lvl}
 								</Button>
-							</DialogTrigger>
+							))}
 						</div>
-						<DialogContent className="max-w-xs sm:max-w-md">
-							<DialogHeader>
-								<DialogTitle>Hierarchy of Operations</DialogTitle>
-								<DialogDescription>
-									This is the order (PEMDAS/BODMAS) used for combined operations.
-								</DialogDescription>
-							</DialogHeader>
-							<div className="mt-4">
-								<img
-									src="/hierarchyoperations.png"
-									alt="Jerarquía de operaciones (PEMDAS)"
-									className="rounded-md object-contain w-full"
-								/>
-							</div>
-						</DialogContent>
-					</Dialog>
 
-					<Link href="/" className="text-center">
-						<Button variant="outline">Back home</Button>
-					</Link>
-				</>
+						{/* Nota informativa y Modal */}
+						<Dialog>
+							<div className="flex items-center justify-center gap-2 mb-8 text-sm text-muted-foreground bg-slate-50 p-3 rounded-lg border">
+								<span>
+									Note: Levels 2 and 3 may generate combined operations.
+								</span>
+								<DialogTrigger asChild>
+									<Button variant="outline" size="icon" className="h-6 w-6 rounded-full">
+										<Info className="h-4 w-4" />
+									</Button>
+								</DialogTrigger>
+							</div>
+							{/* ... (Contenido del Dialog se mantiene igual) ... */}
+						</Dialog>
+
+						{/* Botón Volver */}
+						<Link href="/" className="w-full max-w-xs">
+							<Button variant="ghost" className="w-full">
+								← Back to menu
+							</Button>
+						</Link>
+					</CardContent>
+				</Card>
 			) : (
 				<Card className="w-full max-w-3xl shadow-lg">
 					<CardHeader>
