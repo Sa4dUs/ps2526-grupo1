@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Titan+One&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -50,10 +50,10 @@
 
 :root {
   --font-sans: "Baloo 2", system-ui, sans-serif;
-
+  --font-heading: "Titan One";
 
   --radius: 1rem;
-  --background: oklch(0.98 0.02 240);
+  --background: url('/public/background.jpg');
   --foreground: oklch(0.2 0.03 250);
 
   --card: oklch(1 0 0);
@@ -129,8 +129,12 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
-  }
+@apply bg-background text-foreground font-sans;
+    
+    background-image: url('/background.png'); 
+    background-size: cover;          
+    background-repeat: no-repeat;    
+    background-attachment: fixed;  }
 }
 
 
@@ -141,5 +145,11 @@
 
   .fun-shadow {
     @apply shadow-md hover:shadow-xl transition-shadow duration-200;
+  }
+
+  .font-titan {
+    font-family: var(--font-heading);
+    color: rgb(82, 121, 157);
+    background-color: white;
   }
 }

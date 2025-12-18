@@ -11,7 +11,7 @@ export default function Navbar() {
 	const { user } = useContext(AuthUserContext);
 
 	return (
-		<header className="flex items-center justify-between px-8 py-6 border-b border-border">
+		<header className="flex items-center justify-between px-8 py-6 border-b border-border bg-white">
 			<Link href="/" className="flex items-center gap-3">
 				<Image src={"/logo.png"} alt="EduMath" width={50} height={50} />
 				<h1 className="text-2xl font-semibold tracking-tight">
@@ -19,7 +19,7 @@ export default function Navbar() {
 				</h1>
 			</Link>
 
-			<nav className="flex items-center space-x-4">
+			<nav className="flex items-center allign-center space-x-4 mt-1">
 				{user ? (
 					<UserMenu />
 				) : (
