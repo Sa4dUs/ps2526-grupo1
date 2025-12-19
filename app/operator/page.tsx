@@ -79,7 +79,9 @@ export default function OperatorPage() {
         const formattedProblem: ResponseSuccess = {
             question: rawProblem.question.replace(" = ?", "").trim(),
             solution: rawProblem.correctAnswer,
-            encoded: "local"
+            encoded: "local",
+            index: 0,
+            answers: []
         };
 
         setProblem(formattedProblem);
