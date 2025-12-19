@@ -77,22 +77,43 @@ export default function TrainingPage() {
 						<Dialog>
 							<div className="flex items-center justify-center gap-2 mb-8 text-sm text-muted-foreground bg-slate-50 p-3 rounded-lg border">
 								<span>
-									Note: Levels 2 and 3 may generate combined operations.
+									Note: Levels 2 and 3 may generate combined
+									operations. Click the info icon for more
+									details.
 								</span>
 								<DialogTrigger asChild>
-									<Button variant="outline" size="icon" className="h-6 w-6 rounded-full">
+									<Button
+										variant="outline"
+										size="icon"
+										className="h-6 w-6 rounded-full"
+									>
 										<Info className="h-4 w-4" />
 									</Button>
 								</DialogTrigger>
 							</div>
-							{/* ... (Contenido del Dialog se mantiene igual) ... */}
+							<DialogContent className="max-w-xs sm:max-w-md bg-white">
+								<DialogHeader>
+									<DialogTitle>
+										Hierarchy of Operations
+									</DialogTitle>
+									<DialogDescription>
+										This is the order (PEMDAS/BODMAS) used
+										for combined operations.
+									</DialogDescription>
+								</DialogHeader>
+								<div className="mt-4">
+									<img
+										src="/hierarchyoperations.png"
+										alt="Jerarquía de operaciones (PEMDAS)"
+										className="rounded-md object-contain w-full"
+									/>
+								</div>
+							</DialogContent>
 						</Dialog>
 
 						{/* Botón Volver */}
-						<Link href="/" className="w-full max-w-xs">
-							<Button variant="ghost" className="w-full">
-								← Back to menu
-							</Button>
+						<Link href="/">
+							<Button variant="outline">Back Home</Button>
 						</Link>
 					</CardContent>
 				</Card>
